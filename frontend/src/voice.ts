@@ -1,10 +1,9 @@
-type SpeechRecognitionCtor = new () => SpeechRecognition;
-
 export class VoiceController {
-  private recognition: SpeechRecognition | null = null;
+  private recognition: any = null;
 
   constructor() {
-    const Ctor = (window.SpeechRecognition || window.webkitSpeechRecognition) as SpeechRecognitionCtor | undefined;
+    const speechWindow = window as any;
+    const Ctor = speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
     if (Ctor) {
       this.recognition = new Ctor();
       this.recognition.lang = "en-US";
@@ -22,7 +21,7 @@ export class VoiceController {
     this.recognition.onstart = () => onStatus("Listening...");
     this.recognition.onend = () => onStatus("Connected");
     this.recognition.onerror = () => onStatus("Voice error");
-    this.recognition.onresult = (event) => {
+    this.recognition.onresult = (event: any) => {
       const result = event.results[0][0].transcript;
       onText(result);
     };
