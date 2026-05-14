@@ -33,8 +33,12 @@ ui.bindSend((text) => {
 ui.bindVoice(() => {
   voice.listen(
     (text) => {
-      ui.addMessage("user", text);
-      socket.send(text);
+      try {
+        socket.send(text);
+        ui.addMessage("user", text);
+      } catch (error) {
+        ui.setStatus(error instanceof Error ? error.message : "Send failed");
+      }
     },
     (status) => ui.setStatus(status)
   );

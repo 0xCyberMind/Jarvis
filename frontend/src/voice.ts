@@ -1,8 +1,24 @@
+interface SpeechRecognitionLike {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  onresult: ((event: { results: { [index: number]: { [index: number]: { transcript: string } } } }) => void) | null;
+  start(): void;
+}
+
+interface SpeechWindow {
+  SpeechRecognition?: new () => SpeechRecognitionLike;
+  webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+}
+
 export class VoiceController {
-  private recognition: any = null;
+  private recognition: SpeechRecognitionLike | null = null;
 
   constructor() {
-    const speechWindow = window as any;
+    const speechWindow = window as unknown as SpeechWindow;
     const Ctor = speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
     if (Ctor) {
       this.recognition = new Ctor();

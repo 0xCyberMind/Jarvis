@@ -17,6 +17,7 @@ class ActionRouter:
         self.research = ResearchEngine()
         self.tasks = TaskManager()
         self.allow_shell = os.getenv("ALLOW_SHELL_ACTIONS", "false").lower() == "true"
+        self.allowed_shell_commands = {"echo", "pwd", "whoami", "ls", "dir", "date", "time"}
 
     async def execute(self, user_text: str) -> Dict[str, Any]:
         text = user_text.strip()
@@ -62,10 +63,16 @@ class ActionRouter:
             command = text[4:].strip()
             if not self.allow_shell:
                 return {"type": "shell", "message": "Shell actions are disabled. Set ALLOW_SHELL_ACTIONS=true to enable."}
-            if any(token in command for token in ["rm -rf", "shutdown", "format", "del /f"]):
-                return {"type": "shell", "message": "Blocked potentially unsafe command."}
+            parts = shlex.split(command)
+            if not parts:
+                return {"type": "shell", "message": "Empty shell command."}
+            if parts[0].lower() not in self.allowed_shell_commands:
+                return {
+                    "type": "shell",
+                    "message": f"Command '{parts[0]}' is not allowed. Allowed: {', '.join(sorted(self.allowed_shell_commands))}.",
+                }
             try:
-                proc = subprocess.run(shlex.split(command), capture_output=True, text=True, timeout=20, check=False)
+                proc = subprocess.run(parts, capture_output=True, text=True, timeout=20, check=False)
                 message = (proc.stdout or proc.stderr or "No output").strip()[:2000]
                 return {"type": "shell", "message": message, "data": {"code": proc.returncode}}
             except Exception as exc:

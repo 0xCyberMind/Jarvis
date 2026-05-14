@@ -148,6 +148,7 @@ GROQ_MODEL=llama-3.3-70b-versatile
 OPENAI_API_KEY=
 USER_NAME=YourName
 ALLOW_SHELL_ACTIONS=false
+CORS_ORIGINS=http://localhost:5173
 ```
 
 ### 3) Frontend Setup
@@ -155,6 +156,12 @@ ALLOW_SHELL_ACTIONS=false
 cd frontend
 npm install
 cd ..
+```
+
+Optional frontend websocket override:
+```bash
+# frontend/.env
+VITE_WS_URL=ws://localhost:8000/ws
 ```
 
 ### 4) Run Backend

@@ -4,8 +4,10 @@ export class JarvisSocket {
   private socket: WebSocket | null = null;
 
   connect(onMessage: MessageHandler, onStatus: (status: string) => void): void {
+    const configured = import.meta.env.VITE_WS_URL;
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    this.socket = new WebSocket(`${protocol}://localhost:8000/ws`);
+    const fallback = `${protocol}://${window.location.hostname}:8000/ws`;
+    this.socket = new WebSocket(configured || fallback);
 
     this.socket.onopen = () => onStatus("Connected");
     this.socket.onclose = () => onStatus("Disconnected");

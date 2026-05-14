@@ -1,6 +1,9 @@
+import logging
 from typing import Dict, List
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 
 class ResearchEngine:
@@ -19,7 +22,8 @@ class ResearchEngine:
                     results.append({"title": topic["Text"], "url": topic["FirstURL"]})
                     if len(results) >= limit:
                         break
-        except Exception:
-            results.append({"title": "Research temporarily unavailable", "url": ""})
+        except Exception as exc:
+            logger.exception("Research request failed")
+            results.append({"title": f"Research temporarily unavailable: {exc}", "url": ""})
 
         return {"query": query, "results": results}
