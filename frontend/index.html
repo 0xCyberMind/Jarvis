@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JARVIS</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, sans-serif;
+        background: radial-gradient(circle at top, #1e293b, #020617);
+        color: #e2e8f0;
+      }
+      #app {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        min-height: 100vh;
+      }
+      #orb {
+        width: 100%;
+        height: 100%;
+      }
+      .panel {
+        border-left: 1px solid #334155;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background: rgba(2, 6, 23, 0.7);
+      }
+      .messages {
+        flex: 1;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .msg {
+        padding: 10px;
+        border-radius: 10px;
+        white-space: pre-wrap;
+      }
+      .user { background: #0f766e; }
+      .assistant { background: #1d4ed8; }
+      .controls { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; }
+      input, button {
+        border-radius: 8px;
+        border: 1px solid #334155;
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 10px;
+      }
+      button { cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="orb"></div>
+      <div class="panel">
+        <h2>JARVIS Assistant</h2>
+        <div id="status">Disconnected</div>
+        <div class="messages" id="messages"></div>
+        <div class="controls">
+          <input id="messageInput" placeholder="Type a command..." />
+          <button id="sendBtn">Send</button>
+          <button id="voiceBtn">🎤</button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
