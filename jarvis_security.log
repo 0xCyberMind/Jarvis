@@ -1,0 +1,411 @@
+2026-05-18 15:50:31,778  INFO      Process monitor started.
+2026-05-18 15:50:31,778  INFO      Process monitor started
+2026-05-18 15:50:31,833  INFO      Network monitor started.
+2026-05-18 15:50:31,835  INFO      Network monitor started
+2026-05-18 15:50:31,858  INFO      Creating file integrity baseline...
+2026-05-18 15:50:31,878  INFO      File integrity started
+2026-05-18 15:50:31,926  INFO      USB monitor started.
+2026-05-18 15:50:31,927  INFO      USB guard started
+2026-05-18 15:50:31,974  INFO      Persistence monitor started.
+2026-05-18 15:50:31,990  INFO      Persistence monitor started
+2026-05-18 15:50:32,056  INFO      Clipboard monitor started.
+2026-05-18 15:50:32,069  ERROR     USB wmic error: [WinError 2] The system cannot find the file specified
+2026-05-18 15:50:32,069  INFO      Clipboard monitor started
+2026-05-18 15:50:32,235  INFO      Login event monitor started.
+2026-05-18 15:50:32,279  INFO      Login event monitor started
+2026-05-18 15:50:32,374  ERROR     USB wmic error: [WinError 2] The system cannot find the file specified
+2026-05-18 15:50:32,497  INFO      Daily briefing thread started.
+2026-05-18 15:50:32,555  INFO      Daily briefing started
+2026-05-18 15:50:33,085  INFO      Baseline saved: 4 files
+2026-05-18 15:50:33,256  ERROR     Login monitor error: (1314, 'OpenEventLogW', 'A required privilege is not held by the client.')
+2026-05-18 15:50:33,426  INFO      File integrity watcher started.
+2026-05-18 15:50:33,435  ERROR     Network monitor error: 'charmap' codec can't encode character '\u2192' in position 55: character maps to <undefined>
+2026-05-18 15:51:25,627  INFO      Process monitor started.
+2026-05-18 15:51:25,628  INFO      Process monitor started
+2026-05-18 15:51:25,673  INFO      Network monitor started.
+2026-05-18 15:51:25,689  INFO      Network monitor started
+2026-05-18 15:51:25,722  INFO      File integrity started
+2026-05-18 15:51:25,737  INFO      USB monitor started.
+2026-05-18 15:51:25,737  INFO      USB guard started
+2026-05-18 15:51:25,781  INFO      Persistence monitor started.
+2026-05-18 15:51:25,799  INFO      Persistence monitor started
+2026-05-18 15:51:25,877  INFO      Clipboard monitor started.
+2026-05-18 15:51:25,894  INFO      Clipboard monitor started
+2026-05-18 15:51:25,911  INFO      Login event monitor started.
+2026-05-18 15:51:25,933  INFO      Login event monitor started
+2026-05-18 15:51:25,951  INFO      Daily briefing thread started.
+2026-05-18 15:51:25,952  INFO      Daily briefing started
+2026-05-18 15:51:26,869  WARNING   Login monitor disabled: run Jarvis as administrator to read the Security Event Log.
+2026-05-18 15:51:27,018  INFO      File integrity watcher started.
+2026-05-18 15:51:27,409  WARNING   [INFO][NETWORK] New connection: claude.exe ? 2600:1901:0:179c:::443 [US] | PID 32576 | lport 51572
+2026-05-24 11:32:08,473  INFO      Process monitor started.
+2026-05-24 11:32:08,478  INFO      Network monitor started.
+2026-05-24 11:32:08,673  INFO      USB monitor started.
+2026-05-24 11:32:08,873  INFO      Persistence monitor started.
+2026-05-24 11:32:08,995  INFO      Clipboard monitor started.
+2026-05-24 11:32:09,206  INFO      Login event monitor started.
+2026-05-24 11:32:09,399  INFO      Daily briefing thread started.
+2026-05-24 11:32:10,224  WARNING   [HIGH][INTEGRITY] File modified: C:\Users\bhask\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Ollama.lnk | Old: f9b75805148c? New: 8c581eb050ed?
+2026-05-24 11:32:10,669  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 199.36.158.100:443 [US] | PID 14132 | lport 54865
+2026-05-24 11:32:10,834  WARNING   Login monitor disabled: run Jarvis as administrator to read the Security Event Log.
+2026-05-24 11:32:12,679  WARNING   [INFO][NETWORK] New connection: OneDrive.exe ? 13.89.179.13:443 [US] | PID 26584 | lport 57556
+2026-05-24 11:32:13,179  INFO      File integrity watcher started.
+2026-05-24 11:32:14,970  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.146.102:443 [US] | PID 14132 | lport 52591
+2026-05-24 11:32:15,512  WARNING   [MEDIUM][PROCESS] RAM usage critical: 94% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:32:16,124  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 34.54.88.138:443 [?] | PID 14132 | lport 61539
+2026-05-24 11:32:16,828  WARNING   [INFO][NETWORK] New connection: Spotify.exe ? 104.199.241.202:4070 [?] | PID 8316 | lport 51396
+2026-05-24 11:32:17,385  WARNING   [INFO][NETWORK] New connection: McUpdaterModule.exe ? 23.58.95.153:443 [?] | PID 11884 | lport 52946
+2026-05-24 11:32:17,850  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 216.239.36.223:443 [?] | PID 14132 | lport 53164
+2026-05-24 11:32:18,286  WARNING   [INFO][NETWORK] New connection: msedgewebview2.exe ? 34.120.250.63:443 [?] | PID 17064 | lport 60381
+2026-05-24 11:32:18,858  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 74.125.136.94:443 [?] | PID 14132 | lport 50065
+2026-05-24 11:32:19,393  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.134.139:443 [?] | PID 14132 | lport 65138
+2026-05-24 11:32:19,939  WARNING   [INFO][NETWORK] New connection: unknown ? 40.74.78.229:443 [?] | PID 16968 | lport 60975
+2026-05-24 11:32:20,470  WARNING   [INFO][NETWORK] New connection: Code.exe ? 20.42.65.89:443 [?] | PID 3724 | lport 58261
+2026-05-24 11:32:21,455  WARNING   [INFO][NETWORK] New connection: Spotify.exe ? 35.186.224.24:443 [?] | PID 14076 | lport 57555
+2026-05-24 11:32:22,763  WARNING   [INFO][NETWORK] New connection: SpotifyLauncher.exe ? 35.186.224.24:443 [?] | PID 5984 | lport 52592
+2026-05-24 11:32:22,809  WARNING   [MEDIUM][PROCESS] RAM usage critical: 90% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:32:23,579  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 216.58.203.35:443 [?] | PID 14132 | lport 60969
+2026-05-24 11:32:24,322  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.251.222.106:443 [?] | PID 14132 | lport 49671
+2026-05-24 11:32:25,057  WARNING   [INFO][NETWORK] New connection: unknown ? 23.37.86.104:443 [?] | PID 32208 | lport 60974
+2026-05-24 11:32:25,957  WARNING   [INFO][NETWORK] New connection: svchost.exe ? 20.190.146.37:443 [?] | PID 11700 | lport 51516
+2026-05-24 11:32:26,806  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 192.178.211.188:5228 [?] | PID 14132 | lport 55430
+2026-05-24 11:32:27,568  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.195.35:443 [?] | PID 14132 | lport 51514
+2026-05-24 11:32:28,729  WARNING   [INFO][NETWORK] New connection: MpDefenderCoreService.exe ? 52.123.128.14:443 [?] | PID 6304 | lport 51053
+2026-05-24 11:32:30,238  WARNING   [INFO][NETWORK] New connection: AnyDesk.exe ? 148.113.16.95:443 [?] | PID 5220 | lport 49704
+2026-05-24 11:32:30,272  WARNING   [MEDIUM][PROCESS] RAM usage critical: 91% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:32:31,031  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.143.94:443 [?] | PID 14132 | lport 54176
+2026-05-24 11:32:31,748  WARNING   [INFO][NETWORK] New connection: codex.exe ? 172.64.155.209:443 [?] | PID 8740 | lport 54985
+2026-05-24 11:32:32,573  WARNING   [INFO][NETWORK] New connection: Spotify.exe ? 35.186.224.35:443 [?] | PID 8316 | lport 63852
+2026-05-24 11:32:33,360  WARNING   [INFO][NETWORK] New connection: ModuleCoreService.exe ? 52.38.239.81:443 [?] | PID 10124 | lport 61827
+2026-05-24 11:32:33,930  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 216.239.34.223:443 [?] | PID 14132 | lport 60799
+2026-05-24 11:32:34,660  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.134.102:443 [?] | PID 14132 | lport 53191
+2026-05-24 11:32:35,890  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.134.141:443 [?] | PID 14132 | lport 61312
+2026-05-24 11:32:37,502  WARNING   [INFO][NETWORK] New connection: svchost.exe ? 199.232.210.172:80 [?] | PID 25200 | lport 60253
+2026-05-24 11:32:38,960  WARNING   [INFO][NETWORK] New connection: svchost.exe ? 20.59.87.226:443 [?] | PID 17312 | lport 49408
+2026-05-24 11:32:39,596  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 104.18.39.21:443 [?] | PID 14132 | lport 54231
+2026-05-24 11:32:40,076  WARNING   [INFO][NETWORK] New connection: OneDrive.exe ? 20.59.87.226:443 [?] | PID 26584 | lport 61670
+2026-05-24 11:32:40,675  WARNING   [INFO][NETWORK] New connection: Code.exe ? 104.18.38.10:443 [?] | PID 24404 | lport 49299
+2026-05-24 11:32:41,277  WARNING   [INFO][NETWORK] New connection: Spotify.exe ? 35.186.224.35:443 [?] | PID 14076 | lport 56994
+2026-05-24 11:32:41,711  WARNING   [INFO][NETWORK] New connection: backgroundTaskHost.exe ? 23.43.115.43:443 [?] | PID 25440 | lport 60784
+2026-05-24 11:32:42,278  WARNING   [INFO][NETWORK] New connection: ModuleCoreService.exe ? 100.22.146.210:443 [?] | PID 10124 | lport 53096
+2026-05-24 11:32:42,799  WARNING   [INFO][NETWORK] New connection: Code.exe ? 140.82.114.22:443 [?] | PID 24404 | lport 54989
+2026-05-24 11:32:42,852  WARNING   [MEDIUM][PROCESS] CPU spike: System Idle Process avg 446% | PID 0 sustained high CPU ? possible cryptominer or ransomware
+2026-05-24 11:32:43,695  WARNING   [INFO][NETWORK] New connection: OfficeClickToRun.exe ? 199.232.210.172:80 [?] | PID 5348 | lport 60250
+2026-05-24 11:32:44,827  WARNING   [HIGH][PERSISTENCE] New scheduled task: \SoftLanding\S-1-5-21-1604278254-3642306162-3674692504-1001\SoftLandingDeferralTask-{3c5c2697-5d8b-43ea-8bc7-27fedf966443} | Status: 5/24/2026 11:47:00 AM
+2026-05-24 11:32:44,834  WARNING   [HIGH][PERSISTENCE] New scheduled task: \SoftLanding\S-1-5-21-1604278254-3642306162-3674692504-1001\SoftLandingTriggerTask-128000000001615609-render-{4c3b79f6-7d72-4741-9734-4f7ff04c3ce7} | Status: N/A
+2026-05-24 11:32:45,123  WARNING   [INFO][NETWORK] New connection: msedgewebview2.exe ? 57.144.225.32:5222 [?] | PID 15212 | lport 53387
+2026-05-24 11:32:45,886  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.146.100:443 [?] | PID 14132 | lport 51641
+2026-05-24 11:32:46,600  WARNING   [INFO][NETWORK] New connection: Spotify.exe ? 142.250.146.95:443 [?] | PID 14076 | lport 56517
+2026-05-24 11:32:47,227  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 74.125.200.119:443 [?] | PID 14132 | lport 56287
+2026-05-24 11:32:47,777  WARNING   [INFO][NETWORK] New connection: unknown ? 40.74.79.222:443 [?] | PID 16968 | lport 60970
+2026-05-24 11:32:48,394  WARNING   [INFO][NETWORK] New connection: unknown ? 13.107.5.93:443 [?] | PID 20152 | lport 54177
+2026-05-24 11:32:51,736  WARNING   [MEDIUM][PROCESS] RAM usage critical: 92% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:32:57,524  WARNING   [INFO][NETWORK] New connection: svchost.exe ? 13.107.246.48:443 [?] | PID 25200 | lport 56936
+2026-05-24 11:32:59,023  WARNING   [INFO][NETWORK] New connection: svchost.exe ? 98.70.192.224:443 [?] | PID 10496 | lport 50323
+2026-05-24 11:32:59,569  WARNING   [INFO][NETWORK] New connection: svchost.exe ? 23.58.95.136:443 [?] | PID 25200 | lport 56961
+2026-05-24 11:32:59,967  WARNING   [INFO][NETWORK] New connection: OneDriveStandaloneUpdater.exe ? 20.44.10.123:443 [?] | PID 10764 | lport 56944
+2026-05-24 11:33:00,494  WARNING   [INFO][NETWORK] New connection: taskhostw.exe ? 20.42.179.192:443 [?] | PID 32040 | lport 57743
+2026-05-24 11:33:01,115  WARNING   [INFO][NETWORK] New connection: OneDriveStandaloneUpdater.exe ? 52.123.253.131:443 [?] | PID 10764 | lport 56946
+2026-05-24 11:33:01,742  WARNING   [INFO][NETWORK] New connection: SoftLandingTask.exe ? 20.99.186.246:443 [?] | PID 16884 | lport 58268
+2026-05-24 11:33:02,283  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.143.102:443 [?] | PID 14132 | lport 56928
+2026-05-24 11:33:05,553  WARNING   [MEDIUM][PROCESS] RAM usage critical: 96% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:33:10,300  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 199.36.158.100 | 6 connections in 120s
+2026-05-24 11:33:10,309  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.195.35 | 6 connections in 120s
+2026-05-24 11:33:10,317  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.94 | 6 connections in 120s
+2026-05-24 11:33:10,331  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.58.203.35 | 6 connections in 120s
+2026-05-24 11:33:11,351  WARNING   [INFO][NETWORK] New connection: msedgewebview2.exe ? 57.144.225.32:443 [?] | PID 15212 | lport 59481
+2026-05-24 11:33:11,620  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:33:11,827  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 192.178.211.188 | 6 connections in 120s
+2026-05-24 11:33:12,094  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.36.223 | 6 connections in 120s
+2026-05-24 11:33:12,415  WARNING   [MEDIUM][PROCESS] RAM usage critical: 90% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:33:12,862  WARNING   [INFO][NETWORK] New connection: Code.exe ? 140.82.112.21:443 [?] | PID 3724 | lport 51870
+2026-05-24 11:33:12,874  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.35 | 6 connections in 120s
+2026-05-24 11:33:12,882  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 74.125.136.94 | 6 connections in 120s
+2026-05-24 11:33:12,891  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.34.223 | 6 connections in 120s
+2026-05-24 11:33:17,441  WARNING   [MEDIUM][PROCESS] CPU spike: System Idle Process avg 773% | PID 0 sustained high CPU ? possible cryptominer or ransomware
+2026-05-24 11:33:19,182  WARNING   [MEDIUM][PROCESS] RAM usage critical: 93% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:33:21,279  WARNING   [INFO][NETWORK] New connection: Code.exe ? 51.132.193.104:443 [?] | PID 3724 | lport 57027
+2026-05-24 11:33:21,292  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 13.107.246.48 | 6 connections in 120s
+2026-05-24 11:33:21,302  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 23.58.95.136 | 6 connections in 120s
+2026-05-24 11:33:21,311  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 98.70.192.224 | 6 connections in 120s
+2026-05-24 11:33:21,320  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 57.144.225.32 | 6 connections in 120s
+2026-05-24 11:33:25,667  WARNING   [MEDIUM][PROCESS] RAM usage critical: 94% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:33:29,330  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.94 | 6 connections in 120s
+2026-05-24 11:33:29,337  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 34.54.88.138 | 6 connections in 120s
+2026-05-24 11:33:29,771  WARNING   [INFO][NETWORK] New connection: OneDrive.Sync.Service.exe ? 40.79.163.154:443 [?] | PID 28428 | lport 57031
+2026-05-24 11:33:30,237  WARNING   [INFO][NETWORK] New connection: Code.exe ? 13.67.9.5:443 [?] | PID 3724 | lport 53361
+2026-05-24 11:33:30,250  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 140.82.114.22 | 6 connections in 120s
+2026-05-24 11:33:30,258  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.190.146.37 | 6 connections in 120s
+2026-05-24 11:33:38,271  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 199.36.158.100 | 6 connections in 120s
+2026-05-24 11:33:38,277  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.146.102 | 6 connections in 120s
+2026-05-24 11:33:38,285  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 104.199.241.202 | 6 connections in 120s
+2026-05-24 11:33:38,291  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 34.120.250.63 | 6 connections in 120s
+2026-05-24 11:33:38,298  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.24 | 6 connections in 120s
+2026-05-24 11:33:38,305  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.251.222.106 | 6 connections in 120s
+2026-05-24 11:33:38,311  WARNING   [HIGH][NETWORK] C2 beaconing suspected: AnyDesk.exe ? 148.113.16.95 | 6 connections in 120s
+2026-05-24 11:33:38,318  WARNING   [HIGH][NETWORK] C2 beaconing suspected: codex.exe ? 172.64.155.209 | 6 connections in 120s
+2026-05-24 11:33:38,324  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 74.125.136.94 | 6 connections in 120s
+2026-05-24 11:33:38,331  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.134.141 | 6 connections in 120s
+2026-05-24 11:33:38,338  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 192.178.211.188 | 6 connections in 120s
+2026-05-24 11:33:38,345  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 104.18.39.21 | 6 connections in 120s
+2026-05-24 11:33:38,351  WARNING   [HIGH][NETWORK] C2 beaconing suspected: OneDrive.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:33:38,358  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 104.18.38.10 | 6 connections in 120s
+2026-05-24 11:33:38,366  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:33:38,374  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.36.223 | 6 connections in 120s
+2026-05-24 11:33:38,381  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.195.35 | 6 connections in 120s
+2026-05-24 11:33:38,388  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.58.203.35 | 6 connections in 120s
+2026-05-24 11:33:38,396  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.35 | 6 connections in 120s
+2026-05-24 11:33:38,403  WARNING   [HIGH][NETWORK] C2 beaconing suspected: backgroundTaskHost.exe ? 23.43.115.43 | 6 connections in 120s
+2026-05-24 11:33:38,413  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.34.223 | 6 connections in 120s
+2026-05-24 11:33:38,422  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 142.250.146.95 | 6 connections in 120s
+2026-05-24 11:33:46,432  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 13.107.246.48 | 6 connections in 120s
+2026-05-24 11:33:46,440  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 23.58.95.136 | 6 connections in 120s
+2026-05-24 11:33:46,447  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 98.70.192.224 | 6 connections in 120s
+2026-05-24 11:33:46,453  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.94 | 6 connections in 120s
+2026-05-24 11:33:46,459  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.102 | 6 connections in 120s
+2026-05-24 11:33:46,466  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 57.144.225.32 | 6 connections in 120s
+2026-05-24 11:33:49,308  WARNING   [MEDIUM][PROCESS] CPU spike: System Idle Process avg 951% | PID 0 sustained high CPU ? possible cryptominer or ransomware
+2026-05-24 11:33:50,722  WARNING   [MEDIUM][PROCESS] RAM usage critical: 91% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:33:54,476  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 140.82.114.22 | 6 connections in 120s
+2026-05-24 11:33:56,874  WARNING   [MEDIUM][PROCESS] RAM usage critical: 93% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:34:02,614  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 199.36.158.100 | 6 connections in 120s
+2026-05-24 11:34:02,811  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 74.125.136.94 | 6 connections in 120s
+2026-05-24 11:34:03,016  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 192.178.211.188 | 6 connections in 120s
+2026-05-24 11:34:03,024  WARNING   [MEDIUM][PROCESS] RAM usage critical: 91% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:34:03,032  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:34:03,040  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.36.223 | 6 connections in 120s
+2026-05-24 11:34:03,048  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.195.35 | 6 connections in 120s
+2026-05-24 11:34:03,056  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.58.203.35 | 6 connections in 120s
+2026-05-24 11:34:03,062  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.35 | 6 connections in 120s
+2026-05-24 11:34:03,070  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.34.223 | 6 connections in 120s
+2026-05-24 11:34:09,831  WARNING   [MEDIUM][PROCESS] RAM usage critical: 93% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:34:11,523  WARNING   [INFO][NETWORK] New connection: Code.exe ? 20.44.10.123:443 [?] | PID 3724 | lport 58784
+2026-05-24 11:34:11,556  WARNING   [HIGH][NETWORK] C2 beaconing suspected: OneDrive.Sync.Service.exe ? 40.79.163.154 | 6 connections in 120s
+2026-05-24 11:34:11,569  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 23.58.95.136 | 6 connections in 120s
+2026-05-24 11:34:11,582  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 98.70.192.224 | 6 connections in 120s
+2026-05-24 11:34:11,598  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.94 | 6 connections in 120s
+2026-05-24 11:34:11,620  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 57.144.225.32 | 6 connections in 120s
+2026-05-24 11:34:17,911  WARNING   [MEDIUM][PROCESS] RAM usage critical: 94% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:34:19,650  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 34.54.88.138 | 6 connections in 120s
+2026-05-24 11:34:19,665  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.190.146.37 | 6 connections in 120s
+2026-05-24 11:34:22,945  WARNING   [MEDIUM][PROCESS] CPU spike: System Idle Process avg 867% | PID 0 sustained high CPU ? possible cryptominer or ransomware
+2026-05-24 11:34:24,965  WARNING   [MEDIUM][PROCESS] RAM usage critical: 94% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:34:27,681  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 199.36.158.100 | 6 connections in 120s
+2026-05-24 11:34:27,694  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.146.102 | 6 connections in 120s
+2026-05-24 11:34:28,131  WARNING   [INFO][NETWORK] New connection: Code.exe ? 140.82.114.22:443 [?] | PID 3724 | lport 61971
+2026-05-24 11:34:28,143  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 104.199.241.202 | 6 connections in 120s
+2026-05-24 11:34:28,150  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 140.82.114.22 | 6 connections in 120s
+2026-05-24 11:34:28,159  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 34.120.250.63 | 6 connections in 120s
+2026-05-24 11:34:28,178  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.24 | 6 connections in 120s
+2026-05-24 11:34:28,195  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.251.222.106 | 6 connections in 120s
+2026-05-24 11:34:28,215  WARNING   [HIGH][NETWORK] C2 beaconing suspected: AnyDesk.exe ? 148.113.16.95 | 6 connections in 120s
+2026-05-24 11:34:28,227  WARNING   [HIGH][NETWORK] C2 beaconing suspected: codex.exe ? 172.64.155.209 | 6 connections in 120s
+2026-05-24 11:34:28,243  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 192.178.211.188 | 6 connections in 120s
+2026-05-24 11:34:28,271  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 104.18.39.21 | 6 connections in 120s
+2026-05-24 11:34:28,284  WARNING   [HIGH][NETWORK] C2 beaconing suspected: OneDrive.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:34:28,305  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 104.18.38.10 | 6 connections in 120s
+2026-05-24 11:34:28,319  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:34:28,332  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.195.35 | 6 connections in 120s
+2026-05-24 11:34:28,347  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.58.203.35 | 6 connections in 120s
+2026-05-24 11:34:28,365  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.35 | 6 connections in 120s
+2026-05-24 11:34:28,380  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.34.223 | 6 connections in 120s
+2026-05-24 11:34:31,607  WARNING   [MEDIUM][PROCESS] RAM usage critical: 90% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:34:36,399  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 98.70.192.224 | 6 connections in 120s
+2026-05-24 11:34:36,412  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.94 | 6 connections in 120s
+2026-05-24 11:34:39,317  WARNING   [MEDIUM][PROCESS] RAM usage critical: 94% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:34:45,908  WARNING   [INFO][NETWORK] New connection: python.exe ? 94.130.142.35:443 [?] | PID 13676 | lport 61200
+2026-05-24 11:34:46,199  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.36.223 | 6 connections in 120s
+2026-05-24 11:34:46,341  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.34.223 | 6 connections in 120s
+2026-05-24 11:34:46,347  WARNING   [MEDIUM][PROCESS] RAM usage critical: 93% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:34:52,871  WARNING   [MEDIUM][PROCESS] RAM usage critical: 92% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:34:54,355  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 199.36.158.100 | 6 connections in 120s
+2026-05-24 11:34:55,084  WARNING   [INFO][NETWORK] New connection: Spotify.exe ? 35.186.224.22:443 [?] | PID 14076 | lport 54847
+2026-05-24 11:34:55,111  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 20.44.10.123 | 6 connections in 120s
+2026-05-24 11:34:55,120  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 192.178.211.188 | 6 connections in 120s
+2026-05-24 11:34:55,138  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:34:55,145  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.195.35 | 6 connections in 120s
+2026-05-24 11:34:55,160  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.58.203.35 | 6 connections in 120s
+2026-05-24 11:34:55,172  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.35 | 6 connections in 120s
+2026-05-24 11:34:57,898  WARNING   [MEDIUM][PROCESS] CPU spike: System Idle Process avg 662% | PID 0 sustained high CPU ? possible cryptominer or ransomware
+2026-05-24 11:35:00,191  WARNING   [MEDIUM][PROCESS] RAM usage critical: 94% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:35:03,232  WARNING   [HIGH][NETWORK] C2 beaconing suspected: OneDrive.Sync.Service.exe ? 40.79.163.154 | 6 connections in 120s
+2026-05-24 11:35:03,290  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 140.82.114.22 | 6 connections in 120s
+2026-05-24 11:35:03,313  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.94 | 6 connections in 120s
+2026-05-24 11:35:03,357  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.34.223 | 6 connections in 120s
+2026-05-24 11:35:03,391  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 57.144.225.32 | 6 connections in 120s
+2026-05-24 11:35:07,794  WARNING   [MEDIUM][PROCESS] CPU spike: Code.exe avg 85% | PID 4064 sustained high CPU ? possible cryptominer or ransomware
+2026-05-24 11:35:11,262  WARNING   [MEDIUM][PROCESS] RAM usage critical: 91% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:35:11,423  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 34.54.88.138 | 6 connections in 120s
+2026-05-24 11:35:19,740  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 199.36.158.100 | 6 connections in 120s
+2026-05-24 11:35:20,161  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 104.199.241.202 | 6 connections in 120s
+2026-05-24 11:35:20,921  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 34.120.250.63 | 6 connections in 120s
+2026-05-24 11:35:21,691  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.24 | 6 connections in 120s
+2026-05-24 11:35:22,443  WARNING   [MEDIUM][PROCESS] RAM usage critical: 92% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:35:23,348  WARNING   [INFO][NETWORK] New connection: Code.exe ? 13.69.116.104:443 [?] | PID 3724 | lport 50852
+2026-05-24 11:35:23,366  WARNING   [HIGH][NETWORK] C2 beaconing suspected: AnyDesk.exe ? 148.113.16.95 | 6 connections in 120s
+2026-05-24 11:35:23,383  WARNING   [HIGH][NETWORK] C2 beaconing suspected: codex.exe ? 172.64.155.209 | 6 connections in 120s
+2026-05-24 11:35:23,397  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 192.178.211.188 | 6 connections in 120s
+2026-05-24 11:35:23,422  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 104.18.39.21 | 6 connections in 120s
+2026-05-24 11:35:23,434  WARNING   [HIGH][NETWORK] C2 beaconing suspected: OneDrive.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:35:23,444  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 104.18.38.10 | 6 connections in 120s
+2026-05-24 11:35:23,460  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:35:23,481  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.35 | 6 connections in 120s
+2026-05-24 11:35:28,983  WARNING   [MEDIUM][PROCESS] RAM usage critical: 90% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:35:31,602  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.94 | 6 connections in 120s
+2026-05-24 11:35:36,010  WARNING   [MEDIUM][PROCESS] RAM usage critical: 93% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:35:39,611  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.22 | 6 connections in 120s
+2026-05-24 11:35:39,617  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.34.223 | 6 connections in 120s
+2026-05-24 11:35:39,623  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 140.82.114.22 | 6 connections in 120s
+2026-05-24 11:35:40,084  WARNING   [INFO][NETWORK] New connection: OneDriveLauncher.exe ? 20.42.65.90:443 [?] | PID 13064 | lport 53717
+2026-05-24 11:35:41,076  WARNING   [MEDIUM][PROCESS] CPU spike: System Idle Process avg 557% | PID 0 sustained high CPU ? possible cryptominer or ransomware
+2026-05-24 11:35:48,229  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 199.36.158.100 | 6 connections in 120s
+2026-05-24 11:35:48,498  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 192.178.211.188 | 6 connections in 120s
+2026-05-24 11:35:48,665  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:35:48,676  WARNING   [MEDIUM][PROCESS] RAM usage critical: 93% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:35:49,410  WARNING   [INFO][NETWORK] New connection: updater.exe ? 23.58.95.154:443 [?] | PID 22308 | lport 53848
+2026-05-24 11:35:49,425  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.35 | 6 connections in 120s
+2026-05-24 11:35:58,213  WARNING   [INFO][NETWORK] New connection: svchost.exe ? 92.223.116.252:80 [?] | PID 14460 | lport 53122
+2026-05-24 11:35:59,135  WARNING   [INFO][NETWORK] New connection: updater.exe ? 23.58.95.154:443 [?] | PID 17884 | lport 53128
+2026-05-24 11:35:59,881  WARNING   [INFO][NETWORK] New connection: OfficeClickToRun.exe ? 13.89.179.13:443 [?] | PID 5348 | lport 53116
+2026-05-24 11:35:59,896  WARNING   [HIGH][NETWORK] C2 beaconing suspected: OneDrive.Sync.Service.exe ? 40.79.163.154 | 6 connections in 120s
+2026-05-24 11:36:00,625  WARNING   [INFO][NETWORK] New connection: svchost.exe ? 132.196.74.209:443 [?] | PID 14460 | lport 53113
+2026-05-24 11:36:00,639  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.94 | 6 connections in 120s
+2026-05-24 11:36:00,648  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 57.144.225.32 | 6 connections in 120s
+2026-05-24 11:36:03,604  WARNING   [MEDIUM][PROCESS] RAM usage critical: 94% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:36:08,763  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 34.54.88.138 | 6 connections in 120s
+2026-05-24 11:36:09,904  WARNING   [INFO][NETWORK] New connection: FileCoAuth.exe ? 20.189.173.15:443 [?] | PID 26124 | lport 50779
+2026-05-24 11:36:10,613  WARNING   [MEDIUM][PROCESS] RAM usage critical: 90% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:36:11,058  WARNING   [INFO][NETWORK] New connection: OneDrive.exe ? 20.190.175.24:443 [?] | PID 26584 | lport 50776
+2026-05-24 11:36:17,608  WARNING   [MEDIUM][PROCESS] RAM usage critical: 93% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:36:19,078  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 199.36.158.100 | 6 connections in 120s
+2026-05-24 11:36:19,750  WARNING   [INFO][NETWORK] New connection: Code.exe ? 140.82.113.22:443 [?] | PID 24404 | lport 50215
+2026-05-24 11:36:19,762  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 104.199.241.202 | 6 connections in 120s
+2026-05-24 11:36:19,770  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 34.120.250.63 | 6 connections in 120s
+2026-05-24 11:36:19,778  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.24 | 6 connections in 120s
+2026-05-24 11:36:19,787  WARNING   [HIGH][NETWORK] C2 beaconing suspected: AnyDesk.exe ? 148.113.16.95 | 6 connections in 120s
+2026-05-24 11:36:19,799  WARNING   [HIGH][NETWORK] C2 beaconing suspected: codex.exe ? 172.64.155.209 | 6 connections in 120s
+2026-05-24 11:36:19,810  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 192.178.211.188 | 6 connections in 120s
+2026-05-24 11:36:19,824  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 104.18.39.21 | 6 connections in 120s
+2026-05-24 11:36:19,836  WARNING   [HIGH][NETWORK] C2 beaconing suspected: OneDrive.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:36:19,849  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 104.18.38.10 | 6 connections in 120s
+2026-05-24 11:36:19,861  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:36:19,882  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.35 | 6 connections in 120s
+2026-05-24 11:36:19,910  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 140.82.114.22 | 6 connections in 120s
+2026-05-24 11:36:20,562  WARNING   [INFO][NETWORK] New connection: Code.exe ? 40.79.167.10:443 [?] | PID 3724 | lport 50214
+2026-05-24 11:36:22,632  WARNING   [MEDIUM][PROCESS] CPU spike: System Idle Process avg 580% | PID 0 sustained high CPU ? possible cryptominer or ransomware
+2026-05-24 11:36:28,583  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.94 | 6 connections in 120s
+2026-05-24 11:36:31,131  WARNING   [MEDIUM][PROCESS] RAM usage critical: 91% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:36:36,724  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.22 | 6 connections in 120s
+2026-05-24 11:36:36,926  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.34.223 | 6 connections in 120s
+2026-05-24 11:36:38,116  WARNING   [MEDIUM][PROCESS] RAM usage critical: 91% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:36:44,906  WARNING   [MEDIUM][PROCESS] RAM usage critical: 92% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:36:45,032  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 199.36.158.100 | 6 connections in 120s
+2026-05-24 11:36:45,041  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 92.223.116.252 | 6 connections in 120s
+2026-05-24 11:36:45,050  WARNING   [HIGH][NETWORK] C2 beaconing suspected: OfficeClickToRun.exe ? 13.89.179.13 | 6 connections in 120s
+2026-05-24 11:36:45,786  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 23.58.95.144:443 [?] | PID 14132 | lport 64530
+2026-05-24 11:36:45,800  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 132.196.74.209 | 6 connections in 120s
+2026-05-24 11:36:45,809  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 192.178.211.188 | 6 connections in 120s
+2026-05-24 11:36:45,818  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:36:45,826  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.35 | 6 connections in 120s
+2026-05-24 11:36:46,436  WARNING   [INFO][NETWORK] New connection: Code.exe ? 140.82.113.22:443 [?] | PID 3724 | lport 64159
+2026-05-24 11:36:51,424  WARNING   [MEDIUM][PROCESS] RAM usage critical: 93% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:36:55,441  WARNING   [INFO][NETWORK] New connection: Code.exe ? 40.79.167.10:443 [?] | PID 24404 | lport 53265
+2026-05-24 11:36:55,458  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.190.146.37 | 6 connections in 120s
+2026-05-24 11:36:55,471  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 40.79.167.10 | 6 connections in 120s
+2026-05-24 11:36:56,465  WARNING   [MEDIUM][PROCESS] CPU spike: System Idle Process avg 701% | PID 0 sustained high CPU ? possible cryptominer or ransomware
+2026-05-24 11:36:56,934  WARNING   [INFO][NETWORK] New connection: msedgewebview2.exe ? 23.218.249.162:443 [?] | PID 16144 | lport 53264
+2026-05-24 11:36:58,644  WARNING   [INFO][NETWORK] New connection: SearchHost.exe ? 52.98.88.66:443 [?] | PID 14020 | lport 53269
+2026-05-24 11:36:59,647  WARNING   [INFO][NETWORK] New connection: MsMpEng.exe ? 57.155.141.116:443 [?] | PID 6272 | lport 53266
+2026-05-24 11:36:59,662  WARNING   [HIGH][NETWORK] C2 beaconing suspected: OneDrive.exe ? 20.190.175.24 | 6 connections in 120s
+2026-05-24 11:36:59,671  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.94 | 6 connections in 120s
+2026-05-24 11:36:59,679  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 57.144.225.32 | 6 connections in 120s
+2026-05-24 11:37:07,691  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 34.54.88.138 | 6 connections in 120s
+2026-05-24 11:37:07,698  WARNING   [HIGH][NETWORK] C2 beaconing suspected: SpotifyLauncher.exe ? 35.186.224.24 | 6 connections in 120s
+2026-05-24 11:37:08,439  WARNING   [INFO][NETWORK] New connection: msedgewebview2.exe ? 204.79.197.222:443 [?] | PID 16144 | lport 61038
+2026-05-24 11:37:08,452  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 23.58.95.144 | 6 connections in 120s
+2026-05-24 11:37:09,059  WARNING   [INFO][NETWORK] New connection: msedgewebview2.exe ? 13.107.246.48:443 [?] | PID 16144 | lport 58294
+2026-05-24 11:37:09,072  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 140.82.114.22 | 6 connections in 120s
+2026-05-24 11:37:09,819  WARNING   [INFO][NETWORK] New connection: msedgewebview2.exe ? 150.171.109.129:443 [?] | PID 16144 | lport 53798
+2026-05-24 11:37:10,369  WARNING   [INFO][NETWORK] New connection: msedgewebview2.exe ? 13.107.42.254:443 [?] | PID 16144 | lport 54391
+2026-05-24 11:37:13,135  WARNING   [MEDIUM][PROCESS] RAM usage critical: 91% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:37:18,590  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 199.36.158.100 | 6 connections in 120s
+2026-05-24 11:37:18,823  WARNING   [HIGH][NETWORK] C2 beaconing suspected: OneDrive.exe ? 13.89.179.13 | 6 connections in 120s
+2026-05-24 11:37:20,049  WARNING   [MEDIUM][PROCESS] RAM usage critical: 92% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:37:20,058  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 216.239.38.223:443 [?] | PID 14132 | lport 59209
+2026-05-24 11:37:20,785  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.207.227:443 [?] | PID 14132 | lport 65176
+2026-05-24 11:37:21,428  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.251.10.119:443 [?] | PID 14132 | lport 50367
+2026-05-24 11:37:21,444  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 104.199.241.202 | 6 connections in 120s
+2026-05-24 11:37:21,453  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 34.120.250.63 | 6 connections in 120s
+2026-05-24 11:37:21,464  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.24 | 6 connections in 120s
+2026-05-24 11:37:21,474  WARNING   [HIGH][NETWORK] C2 beaconing suspected: AnyDesk.exe ? 148.113.16.95 | 6 connections in 120s
+2026-05-24 11:37:21,486  WARNING   [HIGH][NETWORK] C2 beaconing suspected: codex.exe ? 172.64.155.209 | 6 connections in 120s
+2026-05-24 11:37:22,548  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.4.132:443 [?] | PID 14132 | lport 57338
+2026-05-24 11:37:23,382  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.143.95:443 [?] | PID 14132 | lport 56614
+2026-05-24 11:37:24,133  WARNING   [INFO][NETWORK] New connection: Code.exe ? 20.189.173.12:443 [?] | PID 3724 | lport 55458
+2026-05-24 11:37:24,145  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 192.178.211.188 | 6 connections in 120s
+2026-05-24 11:37:24,152  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 104.18.39.21 | 6 connections in 120s
+2026-05-24 11:37:24,161  WARNING   [HIGH][NETWORK] C2 beaconing suspected: OneDrive.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:37:24,170  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 104.18.38.10 | 6 connections in 120s
+2026-05-24 11:37:24,921  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.143.136:443 [?] | PID 14132 | lport 65237
+2026-05-24 11:37:26,025  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.251.152.119:443 [?] | PID 14132 | lport 63611
+2026-05-24 11:37:26,290  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:37:26,435  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.35 | 6 connections in 120s
+2026-05-24 11:37:26,441  WARNING   [MEDIUM][PROCESS] RAM usage critical: 94% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:37:26,448  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 140.82.113.22 | 6 connections in 120s
+2026-05-24 11:37:31,468  WARNING   [MEDIUM][PROCESS] CPU spike: System Idle Process avg 650% | PID 0 sustained high CPU ? possible cryptominer or ransomware
+2026-05-24 11:37:33,253  WARNING   [MEDIUM][PROCESS] RAM usage critical: 91% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:37:35,158  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.134.100:443 [?] | PID 14132 | lport 57251
+2026-05-24 11:37:35,885  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.134.91:443 [?] | PID 14132 | lport 56111
+2026-05-24 11:37:35,899  WARNING   [HIGH][NETWORK] C2 beaconing suspected: MsMpEng.exe ? 57.155.141.116 | 6 connections in 120s
+2026-05-24 11:37:36,573  WARNING   [INFO][NETWORK] New connection: msedgewebview2.exe ? 34.36.73.246:443 [?] | PID 17064 | lport 63884
+2026-05-24 11:37:37,201  WARNING   [INFO][NETWORK] New connection: chrome.exe ? 142.250.134.113:443 [?] | PID 14132 | lport 50505
+2026-05-24 11:37:37,212  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.94 | 6 connections in 120s
+2026-05-24 11:37:39,897  WARNING   [MEDIUM][PROCESS] RAM usage critical: 90% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:37:45,377  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 23.58.95.144 | 6 connections in 120s
+2026-05-24 11:37:45,538  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.22 | 6 connections in 120s
+2026-05-24 11:37:46,343  WARNING   [MEDIUM][PROCESS] RAM usage critical: 90% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:37:52,780  WARNING   [MEDIUM][PROCESS] RAM usage critical: 93% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:37:53,676  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 199.36.158.100 | 6 connections in 120s
+2026-05-24 11:37:53,684  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 192.178.211.188 | 6 connections in 120s
+2026-05-24 11:37:53,690  WARNING   [HIGH][NETWORK] C2 beaconing suspected: SearchHost.exe ? 52.98.88.66 | 6 connections in 120s
+2026-05-24 11:37:53,697  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 92.223.116.252 | 6 connections in 120s
+2026-05-24 11:37:53,704  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:37:53,711  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.35 | 6 connections in 120s
+2026-05-24 11:37:59,036  WARNING   [MEDIUM][PROCESS] RAM usage critical: 92% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:38:01,723  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 204.79.197.222 | 6 connections in 120s
+2026-05-24 11:38:01,731  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 13.107.246.48 | 6 connections in 120s
+2026-05-24 11:38:01,740  WARNING   [HIGH][NETWORK] C2 beaconing suspected: MsMpEng.exe ? 57.155.141.116 | 6 connections in 120s
+2026-05-24 11:38:01,749  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 150.171.109.129 | 6 connections in 120s
+2026-05-24 11:38:01,759  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.94 | 6 connections in 120s
+2026-05-24 11:38:01,768  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 57.144.225.32 | 6 connections in 120s
+2026-05-24 11:38:01,776  WARNING   [HIGH][NETWORK] C2 beaconing suspected: msedgewebview2.exe ? 13.107.42.254 | 6 connections in 120s
+2026-05-24 11:38:04,075  WARNING   [MEDIUM][PROCESS] CPU spike: System Idle Process avg 926% | PID 0 sustained high CPU ? possible cryptominer or ransomware
+2026-05-24 11:38:05,784  WARNING   [MEDIUM][PROCESS] RAM usage critical: 93% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:38:09,791  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.38.223 | 6 connections in 120s
+2026-05-24 11:38:09,799  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.207.227 | 6 connections in 120s
+2026-05-24 11:38:09,807  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 216.239.34.223 | 6 connections in 120s
+2026-05-24 11:38:09,815  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.251.10.119 | 6 connections in 120s
+2026-05-24 11:38:09,823  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 34.54.88.138 | 6 connections in 120s
+2026-05-24 11:38:09,831  WARNING   [HIGH][NETWORK] C2 beaconing suspected: SpotifyLauncher.exe ? 35.186.224.24 | 6 connections in 120s
+2026-05-24 11:38:09,840  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 23.58.95.144 | 6 connections in 120s
+2026-05-24 11:38:09,850  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 20.189.173.12 | 6 connections in 120s
+2026-05-24 11:38:09,863  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.4.132 | 6 connections in 120s
+2026-05-24 11:38:09,876  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.95 | 6 connections in 120s
+2026-05-24 11:38:09,901  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.143.136 | 6 connections in 120s
+2026-05-24 11:38:09,926  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 140.82.114.22 | 6 connections in 120s
+2026-05-24 11:38:12,166  WARNING   [MEDIUM][PROCESS] RAM usage critical: 91% | High memory pressure ? check for memory leaks or malware
+2026-05-24 11:38:18,191  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 199.36.158.100 | 6 connections in 120s
+2026-05-24 11:38:18,442  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.24 | 6 connections in 120s
+2026-05-24 11:38:18,448  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 104.199.241.202 | 6 connections in 120s
+2026-05-24 11:38:18,455  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.134.100 | 6 connections in 120s
+2026-05-24 11:38:18,468  WARNING   [HIGH][NETWORK] C2 beaconing suspected: AnyDesk.exe ? 148.113.16.95 | 6 connections in 120s
+2026-05-24 11:38:18,479  WARNING   [HIGH][NETWORK] C2 beaconing suspected: codex.exe ? 172.64.155.209 | 6 connections in 120s
+2026-05-24 11:38:18,493  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 192.178.211.188 | 6 connections in 120s
+2026-05-24 11:38:18,510  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.134.91 | 6 connections in 120s
+2026-05-24 11:38:18,526  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 104.18.39.21 | 6 connections in 120s
+2026-05-24 11:38:18,540  WARNING   [HIGH][NETWORK] C2 beaconing suspected: chrome.exe ? 142.250.134.113 | 6 connections in 120s
+2026-05-24 11:38:18,553  WARNING   [HIGH][NETWORK] C2 beaconing suspected: OneDrive.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:38:18,568  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Code.exe ? 104.18.38.10 | 6 connections in 120s
+2026-05-24 11:38:18,581  WARNING   [HIGH][NETWORK] C2 beaconing suspected: svchost.exe ? 20.59.87.226 | 6 connections in 120s
+2026-05-24 11:38:19,238  WARNING   [INFO][NETWORK] New connection: Code.exe ? 104.208.16.91:443 [?] | PID 3724 | lport 54519
+2026-05-24 11:38:19,249  WARNING   [HIGH][NETWORK] C2 beaconing suspected: Spotify.exe ? 35.186.224.35 | 6 connections in 120s
