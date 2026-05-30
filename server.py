@@ -40,7 +40,7 @@ from ollama_client import OllamaClient
 import httpx
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 
 from actions import (
@@ -108,6 +108,8 @@ from actions import (
     clear_temp_files,
     open_incognito,
     create_text_file,
+    write_text_file,
+    make_folder,
     search_files_by_name,
     move_file,
     copy_file,
@@ -206,6 +208,11 @@ from memory import (
     create_note, search_notes, get_tasks_for_date, build_memory_context,
     format_tasks_for_voice, extract_memories, get_important_memories,
 )
+# Agent manager and adapters (non-invasive scaffolding)
+from agents.manager import AgentManager
+from agents.memory_agent import MemoryAgent
+from agents.planner_agent import PlannerAgent
+from agents.commander_agent import CommanderAgent
 from notes_access import get_recent_notes, read_note, search_notes_apple, create_apple_note
 from qa import QAAgent
 from suggestions import suggest_followup
@@ -218,6 +225,34 @@ log = logging.getLogger("jarvis")
 
 # ---------------------------------------------------------------------------
 # Config
+# Initialize lightweight AgentManager and register core agents
+AGENT_MANAGER = AgentManager()
+AGENT_MANAGER.register("memory", MemoryAgent(AGENT_MANAGER))
+AGENT_MANAGER.register("planner", PlannerAgent(AGENT_MANAGER))
+AGENT_MANAGER.register("commander", CommanderAgent(AGENT_MANAGER))
+
+# Register persistent services that extend the system (not new agents)
+try:
+    from graph_db import GraphDB
+    from twin_engine import DigitalTwin
+    from goal_engine import GoalEngine
+
+    _GRAPH_DB = GraphDB()
+    _DIGITAL_TWIN = DigitalTwin(AGENT_MANAGER)
+    _GOAL_ENGINE = GoalEngine(AGENT_MANAGER)
+
+    # expose via manager so other modules can access
+    setattr(AGENT_MANAGER, "graph_db", _GRAPH_DB)
+    AGENT_MANAGER.register("digital_twin", _DIGITAL_TWIN)
+    AGENT_MANAGER.register("goal_engine", _GOAL_ENGINE)
+    # subscribe twin and goal engine to relevant events
+    try:
+        AGENT_MANAGER.subscribe("MemoryStore", "digital_twin")
+        AGENT_MANAGER.subscribe("GoalRequest", "goal_engine")
+    except Exception:
+        pass
+except Exception:
+    log.exception("Failed to initialize extended services")
 # ---------------------------------------------------------------------------
 
 GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
@@ -1618,7 +1653,7 @@ def extract_action(response: str) -> tuple[str, dict | None]:
     Returns (clean_text_for_tts, action_dict_or_none).
     """
     match = _action_re.search(
-        r'\[ACTION:(BUILD|BROWSE|RESEARCH|OPEN_TERMINAL|PROMPT_PROJECT|ADD_TASK|ADD_NOTE|COMPLETE_TASK|REMEMBER|CREATE_NOTE|READ_NOTE|SCREEN)\]\s*(.*?)$',
+        r'\[ACTION:(BUILD|BROWSE|RESEARCH|OPEN_TERMINAL|PROMPT_PROJECT|ADD_TASK|ADD_NOTE|COMPLETE_TASK|REMEMBER|CREATE_NOTE|READ_NOTE|SCREEN|CREATE_FILE|CREATE_FOLDER|WRITE_FILE|EDIT_FILE)\]\s*(.*?)$',
         response, _action_re.DOTALL,
     )
     if match:
@@ -2253,6 +2288,17 @@ async def health():
     return {"status": "online", "name": "JARVIS", "version": "0.1.0"}
 
 
+@app.get("/metrics")
+async def metrics_endpoint():
+    try:
+        from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+        from metrics import metrics_output
+        data = metrics_output()
+        return Response(content=data, media_type=CONTENT_TYPE_LATEST)
+    except Exception:
+        return JSONResponse(content={"error": "metrics unavailable"}, status_code=500)
+
+
 @app.get("/api/tts-test")
 async def tts_test():
     """Report TTS mode for debugging."""
@@ -2314,6 +2360,80 @@ async def api_list_projects():
     global cached_projects
     cached_projects = await scan_projects()
     return {"projects": cached_projects}
+
+
+@app.get("/api/agents")
+async def api_agents():
+    try:
+        agents = {}
+        for name, agent in getattr(AGENT_MANAGER, "agents", {}).items():
+            agents[name] = {
+                "capabilities": getattr(agent, "capabilities", []),
+                "status": getattr(agent, "status", "unknown"),
+            }
+        return JSONResponse(content={"agents": agents})
+    except Exception:
+        return JSONResponse(content={"error": "agent manager not available"}, status_code=500)
+
+
+@app.get("/api/agents/health")
+async def api_agents_health():
+    try:
+        health = {}
+        for name, agent in getattr(AGENT_MANAGER, "agents", {}).items():
+            health[name] = {
+                "status": getattr(agent, "status", "unknown"),
+                "capabilities": getattr(agent, "capabilities", []),
+            }
+        return JSONResponse(content={"health": health})
+    except Exception:
+        return JSONResponse(content={"error": "agent manager not available"}, status_code=500)
+
+
+@app.post("/api/graph/find")
+async def api_graph_find(payload: dict):
+    """Query the lightweight knowledge graph for nodes matching label/type."""
+    label = payload.get("label")
+    type_ = payload.get("type")
+    limit = int(payload.get("limit", 25))
+    try:
+        g = getattr(AGENT_MANAGER, "graph_db", None)
+        if not g:
+            return JSONResponse(content={"error": "graph not initialized"}, status_code=500)
+        nodes = g.find_nodes(label=label, type=type_, limit=limit)
+        return JSONResponse(content={"nodes": nodes})
+    except Exception:
+        log.exception("Graph query failed")
+        return JSONResponse(content={"error": "query failed"}, status_code=500)
+
+
+@app.get("/api/twin/summary")
+async def api_twin_summary(limit: int = 10):
+    try:
+        twin = AGENT_MANAGER.get_agent("digital_twin")
+        if not twin:
+            return JSONResponse(content={"error": "twin not available"}, status_code=500)
+        return JSONResponse(content={"summary": twin.summarize(limit=limit)})
+    except Exception:
+        log.exception("Twin summary failed")
+        return JSONResponse(content={"error": "twin error"}, status_code=500)
+
+
+@app.post("/api/goals/submit")
+async def api_goals_submit(payload: dict):
+    """Submit a high-level goal to the Goal Engine. Payload: {goal: str, priority: int}
+    """
+    goal = str(payload.get("goal", "")).strip()
+    if not goal:
+        return JSONResponse(content={"error": "no goal provided"}, status_code=400)
+    priority = int(payload.get("priority", 50))
+    try:
+        # Emit a GoalRequest event so the engine can plan + spawn tasks
+        await AGENT_MANAGER.emit_event("GoalRequest", {"goal": goal, "priority": priority})
+        return JSONResponse(content={"status": "accepted", "goal": goal})
+    except Exception:
+        log.exception("Failed to submit goal")
+        return JSONResponse(content={"error": "submission failed"}, status_code=500)
 
 
 @app.post("/api/command/preview")
@@ -2595,7 +2715,15 @@ def detect_action_fast(text: str) -> dict | None:
         target = _strip_command_prefix(text, ["remind me to", "add task", "todo", "to do"])
         return {"action": "add_task", "target": target or text}
 
-    if _looks_like_build_request(text):
+    if _looks_like_build_request(text) and not any(
+        phrase in t for phrase in [
+            "create file ", "new file ", "make file ", "save file ",
+            "write file ", "update file ", "overwrite file ",
+            "edit file ", "modify file ", "open file ",
+            "create folder ", "new folder ", "make folder ",
+            "create directory ", "new directory ",
+        ]
+    ):
         return {"action": "build", "target": text}
 
     if any(p in t for p in ["cancel shutdown", "abort shutdown", "cancel restart", "abort restart", "stop shutdown", "stop restart"]):
@@ -2864,6 +2992,18 @@ def detect_action_fast(text: str) -> dict | None:
         return {"action": "open_remote_desktop"}
 
     # File operations
+    if any(p in t for p in ["create file ", "new file ", "make file ", "save file "]):
+        target = _strip_command_prefix(text, ["create file", "new file", "make file", "save file"])
+        return {"action": "create_file", "target": target or text}
+    if any(p in t for p in ["write file ", "update file ", "overwrite file "]):
+        target = _strip_command_prefix(text, ["write file", "update file", "overwrite file"])
+        return {"action": "write_file", "target": target or text}
+    if any(p in t for p in ["edit file ", "modify file ", "open file "]):
+        target = _strip_command_prefix(text, ["edit file", "modify file", "open file"])
+        return {"action": "edit_file", "target": target or text}
+    if any(p in t for p in ["create folder ", "new folder ", "make folder ", "create directory ", "new directory "]):
+        target = _strip_command_prefix(text, ["create folder", "new folder", "make folder", "create directory", "new directory"])
+        return {"action": "create_folder", "target": target or text}
     if t.startswith("list ") and any(p in t for p in ["files in", "directory", "folder contents"]):
         target = _strip_command_prefix(text, ["list files in", "list directory", "list folder"])
         return {"action": "list_directory", "target": target}
@@ -3305,7 +3445,12 @@ async def execute_fast_action(action: dict) -> str:
     if name == "remember":
         if not target:
             return "What should I remember, sir?"
-        remember(target, mem_type="fact", importance=7)
+        # route memory storage through AgentManager for future extensibility
+        try:
+            await AGENT_MANAGER.emit_event("MemoryStore", {"content": target, "type": "fact", "importance": 7})
+        except Exception:
+            # fallback to direct call to preserve behavior
+            remember(target, mem_type="fact", importance=7)
         create_note(content=target, topic="general")
         return "Noted, sir."
     if name == "add_task":
@@ -3340,6 +3485,29 @@ async def execute_fast_action(action: dict) -> str:
         res = await edit_file(target)
         log.info(f"edit_file result: {res}")
         return res.get("confirmation", "Opened file, sir.")
+    if name == "create_file":
+        if not target:
+            return "Share the full file path you want created, sir."
+        if "|||" in target:
+            path, _, content = target.partition("|||")
+            res = await write_text_file(path.strip(), content.strip())
+        else:
+            res = await create_text_file(target.strip(), "")
+        log.info(f"create_file result: {res}")
+        return res.get("confirmation", "File created, sir.")
+    if name == "write_file":
+        if not target or "|||" not in target:
+            return "Share the file path and content using path ||| content, sir."
+        path, _, content = target.partition("|||")
+        res = await write_text_file(path.strip(), content.strip())
+        log.info(f"write_file result: {res}")
+        return res.get("confirmation", "File updated, sir.")
+    if name == "create_folder":
+        if not target:
+            return "Share the folder name or full path you want created, sir."
+        res = await make_folder(target.strip())
+        log.info(f"create_folder result: {res}")
+        return res.get("confirmation", "Folder created, sir.")
     if name == "run_command":
         if not target:
             return "What command should I run, sir?"
@@ -4379,6 +4547,29 @@ async def voice_handler(ws: WebSocket):
                                     else:
                                         create_note(content=target)
                                     log.info(f"Note created")
+                                elif embedded_action["action"] == "create_file":
+                                    target = embedded_action["target"]
+                                    if "|||" in target:
+                                        path, _, content = target.partition("|||")
+                                        asyncio.create_task(write_text_file(path.strip(), content.strip()))
+                                    else:
+                                        asyncio.create_task(create_text_file(target.strip(), ""))
+                                elif embedded_action["action"] == "write_file":
+                                    target = embedded_action["target"]
+                                    if "|||" in target:
+                                        path, _, content = target.partition("|||")
+                                        asyncio.create_task(write_text_file(path.strip(), content.strip()))
+                                elif embedded_action["action"] == "edit_file":
+                                    target = embedded_action["target"]
+                                    if "|||" in target:
+                                        path, _, content = target.partition("|||")
+                                        asyncio.create_task(write_text_file(path.strip(), content.strip()))
+                                    else:
+                                        asyncio.create_task(_execute_open_terminal())
+                                elif embedded_action["action"] == "create_folder":
+                                    target = embedded_action["target"].strip()
+                                    if target:
+                                        asyncio.create_task(make_folder(target))
                                 elif embedded_action["action"] == "complete_task":
                                     try:
                                         task_id = int(embedded_action["target"].strip())

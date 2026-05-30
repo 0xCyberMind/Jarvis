@@ -1192,6 +1192,20 @@ async def create_text_file(path: str, content: str = "") -> dict:
         return {"success": False, "confirmation": "I couldn't create that file, sir."}
 
 
+async def write_text_file(path: str, content: str) -> dict:
+    """Create or overwrite a text file with explicit content."""
+    try:
+        p = Path(path).expanduser()
+        if not p.is_absolute():
+            p = DESKTOP_PATH / path
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(content, encoding="utf-8")
+        return {"success": True, "confirmation": f"Updated {p.name}, sir.", "path": str(p)}
+    except Exception as e:
+        log.error(f"write_text_file failed: {e}")
+        return {"success": False, "confirmation": "I couldn't edit that file, sir."}
+
+
 async def search_files_by_name(query: str, directory: str = "") -> dict:
     """Search for files matching a name pattern."""
     search_dir = Path(directory).expanduser() if directory else Path.home()

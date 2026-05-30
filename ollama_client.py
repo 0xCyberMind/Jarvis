@@ -12,6 +12,9 @@ from typing import Any, Optional
 import os
 
 import httpx
+import asyncio
+
+from resilience import AsyncCircuitBreaker, async_retry
 
 
 @dataclass
@@ -126,6 +129,14 @@ class OllamaClient:
         request_timeout = timeout if timeout is not None else self.timeout
         last_error: Exception | None = None
 
+        # Circuit breaker shared per-client instance
+        if not hasattr(self, "_circuit_breaker"):
+            # failure_threshold=5, recovery_time=30s
+            self._circuit_breaker = AsyncCircuitBreaker(failure_threshold=5, recovery_time=30)
+
+        if not self._circuit_breaker.call_allowed():
+            raise RuntimeError("LLM circuit open")
+
         for attempt in range(self.max_retries + 1):
             try:
                 if use_groq:
@@ -234,9 +245,21 @@ class OllamaClient:
                         raw=data,
                     )
             except Exception as exc:
+                # notify circuit breaker of failure
+                try:
+                    self._circuit_breaker.record_failure()
+                except Exception:
+                    pass
                 last_error = exc
                 if attempt >= self.max_retries:
                     break
+                # small backoff between attempts
+                await asyncio.sleep(0.1 * (attempt + 1))
 
+        # Final failure: record and raise
+        try:
+            self._circuit_breaker.record_failure()
+        except Exception:
+            pass
         assert last_error is not None
         raise last_error

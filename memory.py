@@ -10,6 +10,7 @@ Everything stored in SQLite. Relevant memories injected into every LLM call
 so JARVIS gets smarter over time.
 """
 
+
 import json
 import logging
 import sqlite3
@@ -134,6 +135,11 @@ def recall(query: str, limit: int = 5) -> list[dict]:
     fts_query = _sanitize_fts_query(query)
     if not fts_query:
         return []
+    import time as _time
+    from metrics import memory_recall_count, memory_recall_latency
+
+    memory_recall_count.inc()
+    start = _time.time()
     conn = _get_db()
     try:
         results = conn.execute("""
@@ -146,7 +152,11 @@ def recall(query: str, limit: int = 5) -> list[dict]:
         """, (fts_query, limit)).fetchall()
     except Exception:
         results = []
-
+    finally:
+        try:
+            memory_recall_latency.observe(_time.time() - start)
+        except Exception:
+            pass
     # Update access counts
     for r in results:
         conn.execute(
