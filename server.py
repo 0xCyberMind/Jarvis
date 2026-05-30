@@ -17,6 +17,7 @@ import os
 import re
 import sys
 import time
+from difflib import SequenceMatcher
 from pathlib import Path
 
 # For inactivity greeting selection
@@ -44,6 +45,7 @@ from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 
 from actions import (
+    APP_COMMANDS,
     IS_WINDOWS,
     _open_windows_terminal,
     execute_action,
@@ -74,6 +76,7 @@ from actions import (
     media_previous,
     windows_system_status,
     open_app,
+    switch_to_app,
     list_running_apps,
     close_app_by_name,
     get_clipboard_text,
@@ -301,6 +304,25 @@ ACTIONS_ALLOWED = os.getenv("JARVIS_ALLOW_ACTIONS", "false").strip().lower() in 
 # Speech policy: when False, JARVIS may skip speaking if user spoke recently (avoid collisions).
 # If True, JARVIS will always speak responses even if the user just spoke.
 ALWAYS_SPEAK = os.getenv("JARVIS_ALWAYS_SPEAK", "false").strip().lower() in ("1", "true", "yes")
+
+
+def _model_size_billions(model_name: str) -> float | None:
+    """Extract the largest model-size marker from names like qwen2.5:7b."""
+    sizes = [float(match) for match in re.findall(r"(?<![\w.])(\d+(?:\.\d+)?)\s*b\b", model_name.lower())]
+    return max(sizes) if sizes else None
+
+
+def model_routing_advice(model_name: str) -> str | None:
+    """Return a warning when the selected model is likely too small for reliable routing."""
+    model = model_name.strip().lower()
+    size_b = _model_size_billions(model)
+    weak_name = any(signal in model for signal in ("mini", "tiny", "small", "nano"))
+    if weak_name or (size_b is not None and size_b < 7):
+        return (
+            f"{model_name} is likely too small for robust multilingual routing and context handling. "
+            "Prefer qwen2.5:7b, qwen3:8b, llama3.1:8b, or a DeepSeek 7B+ model for better intent quality."
+        )
+    return None
 
 
 CONFIRM_YES_PHRASES = {
@@ -585,6 +607,7 @@ LANGUAGE POLICY:
 - Hindi input or explicit Hindi request -> answer in Hindi using Devanagari, with technical terms in natural Hinglish when useful.
 - Mixed Hindi-English input -> answer in natural Hinglish.
 - If the user asks to switch language, obey immediately.
+- Understand intent across English, Hindi, Hinglish, mixed wording, typos, and speech transcription errors. Do not rely on exact phrases.
 - Current response language: {language_instruction}
 
 PROVIDER AND CAPABILITY HONESTY:
@@ -615,6 +638,8 @@ REAL ACTIVE CAPABILITIES:
 RESPONSE STYLE:
 - Short, precise, natural, and technically sharp.
 - No filler, corporate enthusiasm, or apology loops.
+- Normal conversation, emotional messages, questions, advice requests, and Hinglish chat are allowed. Never refuse them just because no tool is needed.
+- If the user is tired, stressed, confused, frustrated, happy, sad, curious, or excited, respond naturally before proposing actions.
 - If you do not know: "I'm afraid I don't have that information, sir."
 - If a task requires action, respond briefly and include the action tag at the end.
 
@@ -640,11 +665,13 @@ DAY PLANNING:
 When {user_name} asks to plan his day, do not dispatch to a project. Review available context, ask for priorities if needed, suggest time blocks, and use [ACTION:ADD_TASK] or [ACTION:ADD_NOTE] only after agreement.
 
 BUILD PLANNING:
-When {user_name} wants to build something, ask one or two quick questions first unless he says to just build it. Confirm the plan in one sentence, then dispatch [ACTION:BUILD] with a detailed description. Check DISPATCHES before re-dispatching. Never hallucinate progress or ports.
+When {user_name} wants to build something, ask one or two quick questions first unless he gives a clear path and says to proceed. Do not silently create a Desktop project. If no build directory is provided, ask for the full path. Check DISPATCHES before re-dispatching. Never hallucinate progress or ports.
 
 ACTION SYSTEM:
 - Actions are handled automatically. Speak naturally; do not narrate internal execution.
 - Put action tags at the end of the response only when an action is needed.
+- Use action tags only for clear user requests. If routing is uncertain, ask one short clarification instead of guessing.
+- Do not create files or folders unless the user explicitly asks for file creation or confirms a build location.
 - [ACTION:SCREEN] - describe user's screen.
 - [ACTION:BUILD] description - build a software project.
 - [ACTION:BROWSE] url or query - open webpage or search in Chrome.
@@ -1191,13 +1218,37 @@ def normalize_voice_command(text: str) -> str:
     replacements = [
         (r"\bdon't\b", "do not"),
         (r"\bdont\b", "do not"),
+        (r"\bopen up\b", "open"),
+        (r"\bstart up\b", "start"),
+        (r"\blaunch up\b", "launch"),
+        (r"\brun up\b", "run"),
+        (r"\bkrdo\b", "kar do"),
+        (r"\bkr\b", "kar"),
         (r"\bkhol do\b", "open"),
         (r"\bkholo\b", "open"),
         (r"\bkhol\b", "open"),
+        (r"\bkholna\b", "open"),
+        (r"\bopen kar do\b", "open"),
+        (r"\bopen karo\b", "open"),
+        (r"\bopen kar\b", "open"),
+        (r"\bcheck kar do\b", "check"),
+        (r"\bcheck karo\b", "check"),
+        (r"\bcheck kar\b", "check"),
+        (r"\bpar jao\b", "switch"),
+        (r"\bpe jao\b", "switch"),
+        (r"\bmein jao\b", "switch"),
+        (r"\bme jao\b", "switch"),
+        (r"\bswitch karo\b", "switch"),
+        (r"\bswitch kar\b", "switch"),
+        (r"\bchange karo\b", "switch"),
+        (r"\bchange kar\b", "switch"),
         (r"\bchalao\b", "open"),
         (r"\bchala\b", "open"),
         (r"\bdikhao\b", "open"),
         (r"\bdikha\b", "open"),
+        (r"\bsetting\b", "settings"),
+        (r"\bseting\b", "settings"),
+        (r"\bsetings\b", "settings"),
         (r"\bbadhao\b", "increase"),
         (r"\bbadha\b", "increase"),
         (r"\bbada\b", "increase"),
@@ -1211,6 +1262,9 @@ def normalize_voice_command(text: str) -> str:
         (r"\bband kar\b", "close"),
         (r"\bchalu\b", "open"),
         (r"\bchal raha hai\b", "open"),
+        (r"\byaad dila\b", "remind"),
+        (r"\byaad dilao\b", "remind"),
+        (r"\byaad dilana\b", "remind"),
     ]
     for pattern, replacement in replacements:
         text = re.sub(pattern, replacement, text)
@@ -1227,12 +1281,33 @@ def normalize_voice_command(text: str) -> str:
         text = cleaned
 
 
+def _token_signature(text: str) -> str:
+    tokens = [token for token in normalize_voice_command(text).split() if token]
+    return " ".join(sorted(tokens))
+
+
+def _phrases_equivalent(text: str, phrase: str, threshold: float = 0.9) -> bool:
+    normalized_text = normalize_voice_command(text)
+    normalized_phrase = normalize_voice_command(phrase)
+    if not normalized_text or not normalized_phrase:
+        return False
+    if normalized_text == normalized_phrase:
+        return True
+    if normalized_text.startswith(f"{normalized_phrase} "):
+        return True
+    if SequenceMatcher(None, _token_signature(normalized_text), _token_signature(normalized_phrase)).ratio() >= threshold:
+        return True
+    return False
+
+
+def _contains_any_equivalent(text: str, phrases: tuple[str, ...], threshold: float = 0.9) -> bool:
+    return any(_phrases_equivalent(text, phrase, threshold=threshold) for phrase in phrases)
+
+
 def is_identity_query(text: str) -> bool:
     """Detect direct identity questions that should bypass the LLM for voice stability."""
-    t = normalize_voice_command(text)
-    identity_phrases = {
+    identity_phrases = (
         "who are you",
-        "what are you",
         "what is your name",
         "tell me your name",
         "your name",
@@ -1241,8 +1316,13 @@ def is_identity_query(text: str) -> bool:
         "who built you",
         "who created you",
         "who made you",
-    }
-    return t in identity_phrases or any(phrase in t for phrase in identity_phrases)
+        "who is your creator",
+        "creator kaun hai",
+        "tera creator kaun hai",
+        "tumhara creator kaun hai",
+        "aapka creator kaun hai",
+    )
+    return _contains_any_equivalent(text, identity_phrases, threshold=0.94)
 
 
 def has_devanagari(text: str) -> bool:
@@ -1515,8 +1595,408 @@ def _simple_title(text: str, fallback: str = "Untitled") -> str:
 # LLM Intent Classifier (replaces keyword-based action detection)
 # ---------------------------------------------------------------------------
 
+CONVERSATION_CATEGORIES = {
+    "GENERAL_CHAT",
+    "EMOTIONAL_SUPPORT",
+    "PRODUCTIVITY",
+    "PLANNING",
+    "REMINDERS",
+    "TASK_MANAGEMENT",
+    "CALENDAR",
+    "EMAIL",
+    "NOTES",
+    "LEARNING",
+    "RESEARCH",
+    "CODING",
+    "DEBUGGING",
+    "SYSTEM_CONTROL",
+    "DEVICE_CONTROL",
+    "FILE_MANAGEMENT",
+    "PROJECT_MANAGEMENT",
+    "DECISION_SUPPORT",
+    "HEALTH_GENERAL",
+    "CAREER",
+    "FINANCE_GENERAL",
+    "CREATIVE_WRITING",
+    "TRANSLATION",
+    "EXPLANATION",
+    "QUESTION_ANSWERING",
+    "BRAINSTORMING",
+    "TROUBLESHOOTING",
+    "SOCIAL_CONVERSATION",
+    "PERSONAL_ASSISTANT",
+}
+
+EMOTIONAL_SIGNAL_LABELS = {
+    "neutral",
+    "fatigue",
+    "stress",
+    "frustration",
+    "confusion",
+    "motivation",
+    "burnout",
+    "happiness",
+    "sadness",
+    "curiosity",
+    "excitement",
+    "loneliness",
+    "worry",
+    "anxiety",
+    "confidence",
+    "uncertainty",
+}
+
+ASSISTANT_MODES = {
+    "executive assistant",
+    "project manager",
+    "research assistant",
+    "software engineer",
+    "study coach",
+    "productivity coach",
+    "conversation partner",
+}
+
+
+@dataclass
+class ConversationInsight:
+    category: str = "GENERAL_CHAT"
+    emotion: str = "neutral"
+    assistant_mode: str = "conversation partner"
+    required_systems: list[str] = field(default_factory=list)
+    urgency: str = "normal"
+    complexity: str = "low"
+    confidence: float = 0.5
+    needs_memory: bool = False
+    use_project_history: bool = False
+    follow_up_questions: list[str] = field(default_factory=list)
+    normalized_text: str = ""
+
+    def to_context_line(self) -> str:
+        systems = ", ".join(self.required_systems) if self.required_systems else "none"
+        follow_up = " | ".join(self.follow_up_questions[:3]) if self.follow_up_questions else "none"
+        return (
+            f"category={self.category}; emotion={self.emotion}; mode={self.assistant_mode}; "
+            f"systems={systems}; urgency={self.urgency}; complexity={self.complexity}; "
+            f"confidence={self.confidence:.2f}; memory={self.needs_memory}; project_history={self.use_project_history}; "
+            f"follow_up={follow_up}"
+        )
+
+
+def _conversation_insight_fallback(text: str) -> ConversationInsight:
+    t = normalize_voice_command(text)
+    words = set(t.split())
+
+    category = "GENERAL_CHAT"
+    assistant_mode = "conversation partner"
+    required_systems: list[str] = []
+    emotion = "neutral"
+    urgency = "normal"
+    complexity = "low"
+    needs_memory = False
+    use_project_history = False
+    follow_up_questions: list[str] = []
+
+    if any(token in words for token in {"meeting", "calendar", "schedule", "deadline"}) and any(token in words for token in {"remind", "reminder", "yaad", "dilao", "dilana"}):
+        category = "CALENDAR"
+        assistant_mode = "executive assistant"
+        required_systems = ["calendar", "memory"]
+        follow_up_questions = ["What time window should I check?", "Is this about today or a future date?"]
+    elif any(token in words for token in {"remind", "reminder", "yaad", "dilao", "dilana"}) or "remind me" in t or "yaad dila" in t:
+        category = "REMINDERS"
+        assistant_mode = "productivity coach"
+        required_systems = ["memory", "tasks"]
+        follow_up_questions = ["When should I remind you?", "Do you want a one-time reminder or a repeated one?"]
+    elif any(token in words for token in {"deadline", "schedule", "today", "tomorrow", "meeting", "calendar"}) or "schedule" in t:
+        category = "CALENDAR"
+        assistant_mode = "executive assistant"
+        required_systems = ["calendar", "memory"]
+        follow_up_questions = ["What time window should I check?", "Is this about today or a future date?"]
+    elif any(token in words for token in {"email", "mail", "inbox", "message"}) or "read my" in t:
+        category = "EMAIL"
+        assistant_mode = "executive assistant"
+        required_systems = ["email", "memory"]
+    elif any(token in words for token in {"note", "notes", "remember"}) or "write it down" in t:
+        category = "NOTES"
+        assistant_mode = "productivity coach"
+        required_systems = ["notes", "memory"]
+        needs_memory = True
+    elif any(token in words for token in {"plan", "planning", "timeline", "priorities"}) or "plan my" in t:
+        category = "PLANNING"
+        assistant_mode = "project manager"
+        required_systems = ["memory", "planning"]
+        follow_up_questions = ["What are your priorities?", "What is the target timeline?"]
+    elif any(token in words for token in {"todo", "task", "tasks", "remind"}):
+        category = "TASK_MANAGEMENT"
+        assistant_mode = "productivity coach"
+        required_systems = ["memory", "tasks"]
+    elif any(token in words for token in {"learn", "study", "course", "exam", "revision"}) or "teach" in t:
+        category = "LEARNING"
+        assistant_mode = "study coach"
+        required_systems = ["memory", "notes"]
+        follow_up_questions = ["What topic are you focusing on?", "When is your deadline or exam date?"]
+    elif any(token in words for token in {"research", "investigate", "source", "references", "compare"}) or "look into" in t:
+        category = "RESEARCH"
+        assistant_mode = "research assistant"
+        required_systems = ["browser", "memory"]
+        use_project_history = True
+    elif any(token in words for token in {"code", "coding", "bug", "fix", "error", "stack", "repo", "framework"}) or ".py" in t or ".js" in t or ".ts" in t:
+        category = "CODING"
+        assistant_mode = "software engineer"
+        required_systems = ["project_history", "memory"]
+        use_project_history = True
+        if any(token in words for token in {"bug", "error", "fix", "debug", "traceback"}):
+            category = "DEBUGGING"
+            required_systems = ["project_history", "memory", "screen_analysis"]
+    elif any(token in words for token in {"open", "close", "launch", "turn", "shutdown", "restart", "volume", "brightness", "lock", "settings", "wifi", "internet", "network", "bluetooth", "whatsapp", "chrome", "browser"}):
+        category = "SYSTEM_CONTROL"
+        assistant_mode = "executive assistant"
+        required_systems = ["device_control"]
+    elif any(token in words for token in {"file", "folder", "directory", "rename", "copy", "move", "delete"}):
+        category = "FILE_MANAGEMENT"
+        required_systems = ["project_history"]
+    elif any(token in words for token in {"decision", "choose", "compare", "recommend", "suggest", "best", "should"}) or "kya karna chahiye" in t or "kya karu" in t or "what should i do" in t:
+        category = "DECISION_SUPPORT"
+        assistant_mode = "executive assistant"
+    elif any(token in words for token in {"write", "poem", "story", "draft", "creative", "script"}):
+        category = "CREATIVE_WRITING"
+        assistant_mode = "conversation partner"
+    elif any(token in words for token in {"translate", "translation", "meaning", "explain"}):
+        category = "TRANSLATION"
+        assistant_mode = "conversation partner"
+    elif any(token in words for token in {"what", "why", "how", "when", "where", "who", "kaise", "kya", "kyun", "kab", "kaha", "kaun"}):
+        category = "QUESTION_ANSWERING"
+        assistant_mode = "conversation partner"
+    elif any(token in words for token in {"health", "sleep", "exercise", "pain", "diet"}):
+        category = "HEALTH_GENERAL"
+    elif any(token in words for token in {"career", "job", "resume", "interview", "salary"}):
+        category = "CAREER"
+        assistant_mode = "executive assistant"
+    elif any(token in words for token in {"money", "budget", "finance", "saving", "invest"}):
+        category = "FINANCE_GENERAL"
+        assistant_mode = "executive assistant"
+    elif any(token in words for token in {"hey", "hi", "hello", "thanks", "bye", "morning", "evening"}):
+        category = "SOCIAL_CONVERSATION"
+
+    if any(token in words for token in {"tired", "exhausted", "drained", "fatigued"}) or "thak" in t or "thak gaya" in t:
+        emotion = "fatigue"
+    elif any(token in words for token in {"stress", "stressed", "pressure", "tense"}) or "tension" in t:
+        emotion = "stress"
+    elif any(token in words for token in {"frustrated", "frustration", "annoyed", "irritated", "angry"}) or "gussa" in t:
+        emotion = "frustration"
+    elif any(token in words for token in {"confused", "confusion", "lost", "unclear"}) or "samajh" in t:
+        emotion = "confusion"
+    elif any(token in words for token in {"motivate", "motivation", "push", "encourage"}):
+        emotion = "motivation"
+    elif any(token in words for token in {"burnout", "burned", "overwhelmed"}):
+        emotion = "burnout"
+    elif any(token in words for token in {"happy", "happiness", "great", "awesome", "khush"}):
+        emotion = "happiness"
+    elif any(token in words for token in {"sad", "upset", "low", "down", "dukhi", "udas", "udaas"}):
+        emotion = "sadness"
+    elif any(token in words for token in {"curious", "curiosity"}) or "janna" in t or "jaanna" in t:
+        emotion = "curiosity"
+    elif any(token in words for token in {"excited", "excitement"}):
+        emotion = "excitement"
+    elif any(token in words for token in {"lonely", "loneliness", "alone"}) or "akela" in t:
+        emotion = "loneliness"
+    elif any(token in words for token in {"worry", "worried", "nervous", "concern"}):
+        emotion = "worry"
+    elif any(token in words for token in {"anxious", "anxiety", "panic"}):
+        emotion = "anxiety"
+    elif any(token in words for token in {"confident", "confidence", "sure"}):
+        emotion = "confidence"
+    elif any(token in words for token in {"uncertain", "uncertainty", "maybe", "unsure"}):
+        emotion = "uncertainty"
+
+    if category == "GENERAL_CHAT" and emotion != "neutral":
+        category = "EMOTIONAL_SUPPORT"
+        assistant_mode = "conversation partner"
+        required_systems = ["memory"]
+        follow_up_questions = ["Do you want to talk through what is happening?", "Would it help to break this down into one small next step?"]
+
+    urgency = "high" if any(token in words for token in {"urgent", "asap", "now", "immediately", "today"}) else "normal"
+    if category in {"CODING", "DEBUGGING", "RESEARCH", "PLANNING", "PROJECT_MANAGEMENT"}:
+        complexity = "medium"
+    if category in {"CODING", "DEBUGGING", "PROJECT_MANAGEMENT", "RESEARCH"} and len(words) > 18:
+        complexity = "high"
+
+    confidence = 0.46 if category == "GENERAL_CHAT" else 0.68
+    if emotion != "neutral":
+        confidence = min(0.9, confidence + 0.08)
+
+    return ConversationInsight(
+        category=category,
+        emotion=emotion,
+        assistant_mode=assistant_mode,
+        required_systems=required_systems,
+        urgency=urgency,
+        complexity=complexity,
+        confidence=confidence,
+        needs_memory=needs_memory,
+        use_project_history=use_project_history,
+        follow_up_questions=follow_up_questions,
+        normalized_text=t,
+    )
+
+
+def _format_follow_up_questions(questions: list[str]) -> str:
+    if not questions:
+        return ""
+    top = questions[:3]
+    return "\n".join(f"- {q}" for q in top)
+
+
+def _extract_json_object(raw: str) -> dict:
+    """Parse a JSON object from local-model output that may include fences or prose."""
+    text = raw.strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, dict):
+            return parsed
+    except json.JSONDecodeError:
+        pass
+    start = text.find("{")
+    end = text.rfind("}")
+    if start != -1 and end > start:
+        parsed = json.loads(text[start:end + 1])
+        if isinstance(parsed, dict):
+            return parsed
+    raise ValueError("No JSON object found")
+
+
+async def classify_conversation_intent(text: str, client: OllamaClient | None, conversation_history: list[dict] | None = None) -> ConversationInsight:
+    """Classify the conversation into a generalized category and needed systems."""
+    normalized = normalize_voice_command(text)
+    fallback = _conversation_insight_fallback(text)
+    if not client:
+        log.info("conversation_intent fallback(no_client): normalized='%s' -> %s", normalized, fallback.to_context_line())
+        return fallback
+
+    try:
+        system_prompt = (
+            "You are a conversation intelligence router for JARVIS. Classify the user's message into exactly one category from this list: "
+            + ", ".join(sorted(CONVERSATION_CATEGORIES))
+            + ".\nReturn ONLY JSON with keys: category, emotion, assistant_mode, required_systems, urgency, complexity, confidence, needs_memory, use_project_history, follow_up_questions.\n"
+            "required_systems must be a list drawn from: memory, calendar, notes, coding, research, planning, device_control, browser, email, screen_analysis, project_history, tasks.\n"
+            "emotion must be one of: " + ", ".join(sorted(EMOTIONAL_SIGNAL_LABELS)) + ". Use neutral when no emotion is present.\n"
+            "assistant_mode must be one of: " + ", ".join(sorted(ASSISTANT_MODES)) + ".\n"
+            "Never use hardcoded example phrases. Understand Hindi, Hinglish, English, mixed language, and transcription mistakes.\n"
+            "If the message is emotional, detect the underlying feeling, not just literal words.\n"
+            "If the message lacks needed context, include 1-3 concise follow_up_questions rather than guessing.\n"
+            "If the message asks about studies, coding, planning, research, or decision support, ask focused follow-ups only when required.\n"
+            "Prefer the simplest required systems and do not activate unrelated systems."
+        )
+        messages = [{"role": "system", "content": system_prompt}]
+        if conversation_history:
+            messages.extend(conversation_history[-6:])
+        messages.append({"role": "user", "content": text})
+        response = await client.chat.completions.create(
+            model=OLLAMA_MODEL,
+            max_tokens=220,
+            messages=messages,
+        )
+        raw = response.choices[0].message.content.strip()
+        data = _extract_json_object(raw)
+        category = str(data.get("category", fallback.category)).strip().upper()
+        if category not in CONVERSATION_CATEGORIES:
+            category = fallback.category
+        emotion = str(data.get("emotion", fallback.emotion)).strip().lower() or fallback.emotion
+        assistant_mode = str(data.get("assistant_mode", fallback.assistant_mode)).strip().lower() or fallback.assistant_mode
+        required_systems = data.get("required_systems", fallback.required_systems)
+        if not isinstance(required_systems, list):
+            required_systems = fallback.required_systems
+        required_systems = [str(item).strip().lower() for item in required_systems if str(item).strip()]
+        follow_up_questions = data.get("follow_up_questions", fallback.follow_up_questions)
+        if not isinstance(follow_up_questions, list):
+            follow_up_questions = fallback.follow_up_questions
+        follow_up_questions = [str(item).strip() for item in follow_up_questions if str(item).strip()]
+        insight = ConversationInsight(
+            category=category,
+            emotion=emotion if emotion in EMOTIONAL_SIGNAL_LABELS or emotion == "neutral" else fallback.emotion,
+            assistant_mode=assistant_mode if assistant_mode in ASSISTANT_MODES else fallback.assistant_mode,
+            required_systems=required_systems or fallback.required_systems,
+            urgency=str(data.get("urgency", fallback.urgency)).strip().lower() or fallback.urgency,
+            complexity=str(data.get("complexity", fallback.complexity)).strip().lower() or fallback.complexity,
+            confidence=float(data.get("confidence", fallback.confidence)),
+            needs_memory=bool(data.get("needs_memory", fallback.needs_memory)),
+            use_project_history=bool(data.get("use_project_history", fallback.use_project_history)),
+            follow_up_questions=follow_up_questions,
+            normalized_text=normalized,
+        )
+        if not insight.required_systems:
+            insight.required_systems = fallback.required_systems
+        log.info("conversation_intent llm: normalized='%s' -> %s", normalized, insight.to_context_line())
+        return insight
+    except Exception as e:
+        log.warning(f"Conversation classification failed: {e}")
+        log.info("conversation_intent fallback(error): normalized='%s' -> %s", normalized, fallback.to_context_line())
+        return fallback
+
+
 async def classify_intent(text: str, client: OllamaClient) -> dict:
-    """Classify every user message using the local LLM.
+    """Backwards-compatible intent classification wrapper.
+
+    Returns generalized conversation intelligence alongside the legacy action field.
+    """
+    insight = await classify_conversation_intent(text, client)
+    legacy_action = detect_action_fast(text)
+    action = legacy_action.get("action", "chat") if legacy_action else "chat"
+    if action not in {"open_terminal", "browse", "build", "chat"}:
+        action = "chat"
+    return {
+        "action": action,
+        "target": text,
+        "category": insight.category,
+        "emotion": insight.emotion,
+        "assistant_mode": insight.assistant_mode,
+        "required_systems": insight.required_systems,
+        "urgency": insight.urgency,
+        "complexity": insight.complexity,
+        "confidence": insight.confidence,
+        "needs_memory": insight.needs_memory,
+        "use_project_history": insight.use_project_history,
+        "follow_up_questions": insight.follow_up_questions,
+        "normalized_text": insight.normalized_text,
+    }
+
+
+def _insight_needs_context(insight: ConversationInsight, section: str) -> bool:
+    section = section.lower()
+    if section == "memory":
+        return insight.needs_memory or insight.category in {
+            "PLANNING",
+            "REMINDERS",
+            "TASK_MANAGEMENT",
+            "NOTES",
+            "LEARNING",
+            "PRODUCTIVITY",
+            "DECISION_SUPPORT",
+            "CAREER",
+            "FINANCE_GENERAL",
+            "EMOTIONAL_SUPPORT",
+            "PERSONAL_ASSISTANT",
+            "PROJECT_MANAGEMENT",
+        }
+    if section == "calendar":
+        return insight.category == "CALENDAR" or "calendar" in insight.required_systems
+    if section == "mail":
+        return insight.category == "EMAIL" or "email" in insight.required_systems
+    if section == "screen":
+        return "screen_analysis" in insight.required_systems or insight.category == "DEBUGGING"
+    if section == "project":
+        return insight.use_project_history or insight.category in {
+            "CODING",
+            "DEBUGGING",
+            "FILE_MANAGEMENT",
+            "PROJECT_MANAGEMENT",
+            "RESEARCH",
+        }
+    return False
+
+async def classify_basic_action_intent(text: str, client: OllamaClient) -> dict:
+    """Legacy narrow action classifier kept for compatibility experiments.
 
     Returns: {"action": "open_terminal|browse|build|chat", "target": "description"}
     """
@@ -1546,9 +2026,7 @@ async def classify_intent(text: str, client: OllamaClient) -> dict:
             }, {"role": "user", "content": text}],
         )
         raw = response.choices[0].message.content.strip()
-        if raw.startswith("```"):
-            raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
-        data = json.loads(raw)
+        data = _extract_json_object(raw)
         action = str(data.get("action", "chat")).strip()
         target = data.get("target", text)
 
@@ -1972,6 +2450,7 @@ async def generate_response(
     last_response: str = "",
     session_summary: str = "",
     response_language: str = "english",
+    conversation_insight: ConversationInsight | None = None,
 ) -> str:
     """Generate a JARVIS response using the local Ollama model."""
     if is_identity_conflict(text):
@@ -1979,16 +2458,20 @@ async def generate_response(
     if is_identity_query(text):
         return localized_identity_response(response_language)
 
+    if conversation_insight is None:
+        conversation_insight = await classify_conversation_intent(text, client, conversation_history)
+
     now = datetime.now()
     current_time = now.strftime("%A, %B %d, %Y at %I:%M %p")
 
     # Use cached weather
     weather_info = _ctx_cache.get("weather", "Weather data unavailable.")
 
-    # Use cached context (refreshed in background, never blocks responses)
-    screen_ctx = _ctx_cache["screen"]
-    calendar_ctx = _ctx_cache["calendar"]
-    mail_ctx = _ctx_cache["mail"]
+    # Use cached context selectively based on the classifier output.
+    screen_ctx = _ctx_cache["screen"] if _insight_needs_context(conversation_insight, "screen") else ""
+    calendar_ctx = _ctx_cache["calendar"] if _insight_needs_context(conversation_insight, "calendar") else ""
+    mail_ctx = _ctx_cache["mail"] if _insight_needs_context(conversation_insight, "mail") else ""
+    known_projects = format_projects_for_prompt(projects) if _insight_needs_context(conversation_insight, "project") else ""
 
     # Check if any lookups are in progress
     lookup_status = get_lookup_status()
@@ -2001,20 +2484,34 @@ async def generate_response(
         mail_context=mail_ctx,
         active_tasks=task_mgr.get_active_tasks_summary(),
         dispatch_context=dispatch_registry.format_for_prompt(),
-        known_projects=format_projects_for_prompt(projects),
+        known_projects=known_projects,
         language_instruction=language_instruction_for(response_language),
     )
     if lookup_status:
         system += f"\n\nACTIVE LOOKUPS:\n{lookup_status}\nIf asked about progress, report this status."
 
-    # Inject relevant memories and tasks
-    memory_ctx = build_memory_context(text)
-    if memory_ctx:
-        system += f"\n\nJARVIS MEMORY:\n{memory_ctx}"
+    # Inject relevant memories and tasks only when needed.
+    if _insight_needs_context(conversation_insight, "memory"):
+        memory_ctx = build_memory_context(text)
+        if memory_ctx:
+            system += f"\n\nJARVIS MEMORY:\n{memory_ctx}"
 
     # Three-tier memory — inject rolling summary of earlier conversation
     if session_summary:
         system += f"\n\nSESSION CONTEXT (earlier in this conversation):\n{session_summary}"
+
+    system += (
+        "\n\nCONVERSATION INTELLIGENCE:\n"
+        f"{conversation_insight.to_context_line()}\n"
+        "Use this to choose the right assistant mode and to decide whether to ask a focused follow-up question. "
+        "Only ask one short follow-up when essential context is missing. "
+        "If the user is emotional, respond with empathy first; do not jump straight to task execution. "
+        "If required_systems are listed, keep the answer scoped to those systems only."
+    )
+
+    follow_up_block = _format_follow_up_questions(conversation_insight.follow_up_questions)
+    if follow_up_block:
+        system += f"\n\nPREFERRED FOLLOW-UP QUESTIONS IF CONTEXT IS MISSING:\n{follow_up_block}"
 
     # Self-awareness — remind JARVIS of last response to avoid repetition
     if last_response:
@@ -2261,6 +2758,9 @@ async def lifespan(application: FastAPI):
     else:
         anthropic_client = OllamaClient(base_url=OLLAMA_BASE_URL, model=LLM_MODEL, timeout=OLLAMA_TIMEOUT, api_key="")
         log.info("Using local Ollama model %s at %s", LLM_MODEL, OLLAMA_BASE_URL)
+        warning = model_routing_advice(LLM_MODEL)
+        if warning:
+            log.warning("Model routing advice: %s", warning)
     cached_projects = []
 
     # Start context refresh in a separate thread (never touches event loop)
@@ -2556,6 +3056,228 @@ def _scan_projects_sync() -> list[dict]:
     return projects
 
 
+APP_ALIAS_OVERRIDES: dict[str, tuple[str, ...]] = {
+    "chrome": ("chrome", "google chrome", "google", "chrom", "crome"),
+    "edge": ("edge", "microsoft edge", "ms edge", "msedge"),
+    "whatsapp": ("whatsapp", "whats app", "watsapp", "whatspp", "whatsap", "whatapp", "what's app"),
+    "calculator": ("calculator", "calc", "calci", "calculetor"),
+    "notepad": ("notepad", "note pad", "notpad", "notes pad"),
+    "explorer": ("explorer", "file explorer", "windows explorer", "files", "file manager", "folder"),
+    "settings": ("settings", "setting", "seting", "setings", "windows settings", "system settings", "control panel", "configuration"),
+    "camera": ("camera", "webcam"),
+    "paint": ("paint", "mspaint"),
+    "vs code": ("vs code", "vscode", "visual studio code", "code editor"),
+    "chrome": ("browser", "web browser", "internet browser"),
+}
+
+APPLICATION_REGISTRY: dict[str, set[str]] = {}
+for _alias in APP_COMMANDS:
+    _canonical = {
+        "google chrome": "chrome",
+        "microsoft edge": "edge",
+        "msedge": "edge",
+        "calc": "calculator",
+        "whats app": "whatsapp",
+        "watsapp": "whatsapp",
+        "whatspp": "whatsapp",
+        "visual studio code": "vs code",
+        "vscode": "vs code",
+    }.get(_alias, _alias)
+    APPLICATION_REGISTRY.setdefault(_canonical, set()).add(_alias)
+for _canonical, _aliases in APP_ALIAS_OVERRIDES.items():
+    APPLICATION_REGISTRY.setdefault(_canonical, set()).update(_aliases)
+
+SPECIAL_APPLICATION_ACTIONS = {
+    "settings": "open_settings",
+    "explorer": "open_file_explorer",
+}
+
+APP_COMMAND_FILLER_WORDS = {
+    "the", "app", "application", "please", "sir", "to", "in", "on", "par", "pe",
+    "mein", "me", "ko", "karo", "kar", "do", "jara", "zara", "open", "switch",
+    "start", "launch", "run", "show", "focus", "change",
+}
+
+ACTION_OBJECT_SYNONYMS = {
+    "settings": tuple(sorted(APPLICATION_REGISTRY["settings"])),
+    "network": ("wifi", "wi fi", "wi-fi", "internet", "network", "connection", "net"),
+    "system": ("pc", "computer", "system", "machine", "laptop", "windows"),
+}
+
+ACTION_VERB_SYNONYMS = {
+    "open": ("open", "start", "launch", "run", "show", "khol", "kholo", "chala", "chalao"),
+    "check": ("check", "status", "working", "test", "inspect", "verify", "chal", "connected"),
+    "switch": ("switch", "change", "focus", "activate", "jump"),
+}
+
+
+def _semantic_phrase_match(text: str, phrase: str, threshold: float = 0.86) -> bool:
+    normalized_text = normalize_voice_command(text)
+    normalized_phrase = normalize_voice_command(phrase)
+    if not normalized_text or not normalized_phrase:
+        return False
+    if normalized_phrase in normalized_text:
+        return True
+    text_tokens = normalized_text.split()
+    phrase_tokens = normalized_phrase.split()
+    if len(phrase_tokens) == 1:
+        return any(SequenceMatcher(None, token, normalized_phrase).ratio() >= threshold for token in text_tokens)
+    windows = (
+        " ".join(text_tokens[i:i + len(phrase_tokens)])
+        for i in range(0, max(1, len(text_tokens) - len(phrase_tokens) + 1))
+    )
+    return any(SequenceMatcher(None, window, normalized_phrase).ratio() >= threshold for window in windows)
+
+
+def _clean_app_candidate(text: str) -> str:
+    tokens = [token for token in normalize_voice_command(text).split() if token not in APP_COMMAND_FILLER_WORDS]
+    return " ".join(tokens).strip()
+
+
+def _best_application_match(candidate: str, threshold: float = 0.86) -> tuple[str, str, float] | None:
+    cleaned = _clean_app_candidate(candidate)
+    if not cleaned:
+        return None
+
+    best: tuple[str, str, float] | None = None
+    for canonical, aliases in APPLICATION_REGISTRY.items():
+        for alias in aliases:
+            normalized_alias = normalize_voice_command(alias)
+            if cleaned == normalized_alias:
+                return canonical, alias, 1.0
+            score = SequenceMatcher(None, cleaned, normalized_alias).ratio()
+            token_score = SequenceMatcher(None, _token_signature(cleaned), _token_signature(normalized_alias)).ratio()
+            score = max(score, token_score)
+            if normalized_alias in cleaned or cleaned in normalized_alias:
+                score = max(score, 0.91 if len(cleaned) >= 4 else 0.84)
+            if best is None or score > best[2]:
+                best = (canonical, alias, score)
+
+    if not best:
+        return None
+    canonical, alias, score = best
+    dynamic_threshold = 0.92 if len(cleaned) <= 3 else threshold
+    if score >= dynamic_threshold:
+        return canonical, alias, score
+    return None
+
+
+def _application_action(canonical: str, mode: str, confidence: float, alias: str) -> dict:
+    action = SPECIAL_APPLICATION_ACTIONS.get(canonical)
+    if mode == "switch" and canonical not in SPECIAL_APPLICATION_ACTIONS:
+        result = {"action": "switch_app", "target": canonical}
+    elif action:
+        result = {"action": action}
+    else:
+        result = {"action": "open_app", "target": canonical}
+    result.update({"confidence": round(confidence, 3), "source": "application_registry", "matched_alias": alias, "mode": mode})
+    return result
+
+
+def _detect_application_command(text: str) -> dict | None:
+    """Detect direct app commands before the LLM: "chrome", "open chrome", "switch to whatsapp"."""
+    t = normalize_voice_command(text)
+    if not t:
+        return None
+    if any(t.startswith(prefix) for prefix in (
+        "create file ", "new file ", "make file ", "save file ",
+        "write file ", "update file ", "overwrite file ",
+        "edit file ", "modify file ", "open file ",
+        "create folder ", "new folder ", "make folder ",
+        "create directory ", "new directory ",
+    )):
+        return None
+
+    candidates: list[tuple[str, str, float]] = []
+    open_prefixes = (
+        "open ", "start ", "launch ", "run ", "show ", "open the ", "start the ",
+        "launch the ", "run the ", "show the ",
+    )
+    switch_prefixes = (
+        "switch to ", "switch ", "change to ", "change ", "focus ", "focus on ",
+        "activate ", "jump to ", "go to ", "bring up ", "bring me to ",
+    )
+    open_suffixes = (" open",)
+    switch_suffixes = (" switch", " focus", " activate")
+
+    for prefix in switch_prefixes:
+        if t.startswith(prefix) and t != prefix.strip():
+            candidates.append(("switch", t[len(prefix):].strip(), 0.97))
+    for prefix in open_prefixes:
+        if t.startswith(prefix) and t != prefix.strip():
+            candidates.append(("open", t[len(prefix):].strip(), 0.97))
+    for suffix in switch_suffixes:
+        if t.endswith(suffix) and len(t) > len(suffix):
+            candidates.append(("switch", t[:-len(suffix)].strip(), 0.94))
+    for suffix in open_suffixes:
+        if t.endswith(suffix) and len(t) > len(suffix):
+            candidates.append(("open", t[:-len(suffix)].strip(), 0.94))
+
+    # Single-word or bare app names: "whatsapp", "chrome", "calculator".
+    if len(t.split()) <= 3:
+        candidates.append(("open", t, 0.9))
+
+    for mode, candidate, base_confidence in candidates:
+        matched = _best_application_match(candidate)
+        if matched:
+            canonical, alias, score = matched
+            confidence = min(0.99, base_confidence * score)
+            action = _application_action(canonical, mode, confidence, alias)
+            log.info("application_router: raw='%s' normalized='%s' candidate='%s' -> %s", text, t, candidate, action)
+            return action
+    return None
+
+
+def _detect_window_command(text: str) -> dict | None:
+    t = normalize_voice_command(text)
+    words = set(t.split())
+    if "minimise" in words:
+        words.add("minimize")
+    if "maximise" in words:
+        words.add("maximize")
+    if "minimize" in words and ("window" in words or "screen" in words or len(words) <= 3):
+        return {"action": "minimize_window", "confidence": 0.91, "source": "window_router"}
+    if "maximize" in words and ("window" in words or "screen" in words or len(words) <= 3):
+        return {"action": "maximize_window", "confidence": 0.91, "source": "window_router"}
+    if _semantic_phrase_match(t, "minimize window") or _semantic_phrase_match(t, "window minimize"):
+        return {"action": "minimize_window", "confidence": 0.88, "source": "window_router"}
+    if _semantic_phrase_match(t, "maximize window") or _semantic_phrase_match(t, "window maximize"):
+        return {"action": "maximize_window", "confidence": 0.88, "source": "window_router"}
+    return None
+
+
+def _semantic_command_router(text: str) -> dict | None:
+    """Route short multilingual commands by intent object + verb, with typo tolerance."""
+    t = normalize_voice_command(text)
+    words = t.split()
+    if not words or len(words) > 12:
+        return None
+
+    def has_object(name: str) -> bool:
+        return any(_semantic_phrase_match(t, phrase) for phrase in ACTION_OBJECT_SYNONYMS[name])
+
+    def has_verb(name: str) -> bool:
+        return any(_semantic_phrase_match(t, phrase) for phrase in ACTION_VERB_SYNONYMS[name])
+
+    app_action = _detect_application_command(text)
+    if app_action:
+        return app_action
+
+    window_action = _detect_window_command(text)
+    if window_action:
+        return window_action
+
+    if has_object("settings") and (has_verb("open") or has_verb("check")):
+        return {"action": "open_settings", "confidence": 0.88, "source": "semantic_router"}
+    if t in {"wifi", "wi fi", "network", "internet"}:
+        return {"action": "network_status", "confidence": 0.82, "source": "semantic_router"}
+    if has_object("network") and has_verb("check"):
+        return {"action": "network_status", "confidence": 0.9, "source": "semantic_router"}
+    if has_object("system") and has_verb("check") and any(token in words for token in {"status", "health", "check"}):
+        return {"action": "windows_system_status", "confidence": 0.84, "source": "semantic_router"}
+    return None
+
+
 def detect_action_fast(text: str) -> dict | None:
     """Keyword-based action detection — ONLY for short, obvious commands.
 
@@ -2604,6 +3326,10 @@ def detect_action_fast(text: str) -> dict | None:
 
     if t in {"help", "what can you do", "what are your commands", "show commands", "capabilities"}:
         return {"action": "capabilities"}
+
+    semantic_action = _semantic_command_router(text)
+    if semantic_action:
+        return semantic_action
 
     if any(p in t for p in ["exit cyber mode", "disable cyber mode", "normal mode", "leave cyber mode"]):
         return {"action": "security_mode_off"}
@@ -2772,7 +3498,11 @@ def detect_action_fast(text: str) -> dict | None:
 
     if t in {"task manager", "open task manager"}:
         return {"action": "open_task_manager"}
-    if t in {"settings", "open settings", "windows settings"}:
+    if (
+        t in {"settings", "open settings", "windows settings"}
+        or ("settings" in t and "open" in t)
+        or ("setting" in t and "open" in t)
+    ):
         return {"action": "open_settings"}
     if t in {"file explorer", "open file explorer", "explorer"}:
         return {"action": "open_file_explorer"}
@@ -3295,6 +4025,9 @@ async def run_automation_self_test() -> str:
         )
         llm_text = (llm_resp.choices[0].message.content or "").strip()
         checks.append(("Local model", bool(llm_text), llm_text[:60] or "empty response"))
+        model_warning = model_routing_advice(OLLAMA_MODEL)
+        if model_warning:
+            checks.append(("Model routing", False, model_warning))
     except Exception as e:
         checks.append(("Local model", False, f"{type(e).__name__}"))
 
@@ -3526,6 +4259,16 @@ async def execute_fast_action(action: dict) -> str:
         res = await open_url(target)
         log.info(f"open_url result: {res}")
         return res.get("confirmation", "Opened URL, sir.")
+    if name == "switch_app":
+        if not target:
+            return "Which app should I switch to, sir?"
+        res = await switch_to_app(target)
+        log.info(f"switch_app result: {res}")
+        if not res.get("success"):
+            fallback = await open_app(target)
+            log.info(f"switch_app fallback open_app result: {fallback}")
+            return fallback.get("confirmation", f"Opening {target}, sir.")
+        return res.get("confirmation", f"Switched to {target}, sir.")
     if name == "open_app":
         return (await open_app(target))["confirmation"]
     if name == "open_path":
@@ -4341,12 +5084,14 @@ async def voice_handler(ws: WebSocket):
                 elif work_session.active:
                     if is_casual_question(user_text):
                         # Quick chat — bypass claude -p, use Haiku
+                        conversation_insight = await classify_conversation_intent(user_text, anthropic_client, history)
                         response_text = await generate_response(
                             user_text, anthropic_client, task_manager,
                             cached_projects, history,
                             last_response=last_jarvis_response,
                             session_summary=session_summary,
                             response_language=response_language,
+                            conversation_insight=conversation_insight,
                         )
                     else:
                         # Send to claude -p (full power)
@@ -4444,12 +5189,14 @@ async def voice_handler(ws: WebSocket):
                         if not anthropic_client:
                             response_text = "Language system not configured, sir."
                         else:
+                            conversation_insight = await classify_conversation_intent(user_text, anthropic_client, history)
                             response_text = await generate_response(
                                 user_text, anthropic_client, task_manager,
                                 cached_projects, history,
                                 last_response=last_jarvis_response,
                                 session_summary=session_summary,
                                 response_language=response_language,
+                                conversation_insight=conversation_insight,
                             )
 
                             # Check for action tags embedded in LLM response
@@ -4464,40 +5211,14 @@ async def voice_handler(ws: WebSocket):
                                         proj = embedded_action["target"].split("|||")[0].strip()
                                         response_text = f"Connecting to {proj} now, sir."
                                     elif action_type == "build":
-                                        response_text = "On it, sir."
+                                        response_text = await handle_build(embedded_action["target"] or "Build the requested project.")
                                     elif action_type == "research":
                                         response_text = "Looking into that now, sir."
                                     else:
                                         response_text = "Right away, sir."
 
                                 if embedded_action["action"] == "build":
-                                    # Build in background — JARVIS stays conversational
-                                    target = embedded_action["target"]
-                                    name = _generate_project_name(target)
-                                    path = str(Path.home() / "Desktop" / name)
-                                    os.makedirs(path, exist_ok=True)
-
-                                    # Write detailed CLAUDE.md
-                                    Path(path, "CLAUDE.md").write_text(
-                                        f"# Task\n\n{target}\n\n"
-                                        "## Instructions\n"
-                                        "- BUILD THIS NOW. Do not ask clarifying questions.\n"
-                                        "- Use your best judgment for any design/architecture decisions.\n"
-                                        "- Write complete, working code files — not plans or specs.\n"
-                                        "- If it's a web app: use React + Vite + Tailwind unless specified otherwise.\n"
-                                        "- Make it look polished and professional. Modern UI, clean layout.\n"
-                                        "- Ensure it runs with a single command (npm run dev or similar).\n"
-                                        "- If you reference a real product's UI (e.g. 'Zillow clone'), match their actual layout and features closely.\n"
-                                        "- Use realistic mock data, not placeholder Lorem Ipsum.\n"
-                                        "- After building, start the dev server and verify the app loads without errors.\n"
-                                        "- IMPORTANT: Your LAST line of output MUST be exactly: RUNNING_AT=http://localhost:PORT (the actual port the dev server is using)\n"
-                                    )
-
-                                    # Register and dispatch
-                                    did = dispatch_registry.register(name, path, target)
-                                    asyncio.create_task(
-                                        _execute_prompt_project(name, target, work_session, ws, dispatch_id=did, history=history, voice_state=voice_state)
-                                    )
+                                    response_text = await handle_build(embedded_action["target"] or "Build the requested project.")
                                 elif embedded_action["action"] == "browse":
                                     asyncio.create_task(_execute_browse(embedded_action["target"]))
                                 elif embedded_action["action"] == "research":
@@ -4772,6 +5493,7 @@ async def api_settings_status():
     except Exception: pass
     try: task_count = len(get_open_tasks())
     except Exception: pass
+    active_model = REMOTE_MODEL if USE_GROQ else env_dict.get("OLLAMA_MODEL", LLM_MODEL)
     return {
         "claude_code_installed": claude_installed,
         "calendar_accessible": calendar_ok,
@@ -4786,7 +5508,8 @@ async def api_settings_status():
             "groq": USE_GROQ,
             "ollama": bool(env_dict.get("OLLAMA_BASE_URL", "").strip()),
             "user_name": env_dict.get("USER_NAME", ""),
-            "model": REMOTE_MODEL if USE_GROQ else env_dict.get("OLLAMA_MODEL", LLM_MODEL),
+            "model": active_model,
+            "model_warning": model_routing_advice(active_model),
             "base_url": GROQ_BASE_URL if USE_GROQ else env_dict.get("OLLAMA_BASE_URL", OLLAMA_BASE_URL),
         },
     }

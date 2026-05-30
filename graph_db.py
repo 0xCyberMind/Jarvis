@@ -50,6 +50,78 @@ class GraphDB:
             self._conn.commit()
             return cur.lastrowid
 
+    def upsert_node(self, label: str, type: str = "entity", data: Optional[Dict[str, Any]] = None) -> int:
+        data = data or {}
+        j = json.dumps(data, default=str)
+        with self._lock:
+            cur = self._conn.cursor()
+            cur.execute("SELECT id FROM nodes WHERE label = ? AND type = ? ORDER BY id DESC LIMIT 1", (label, type))
+            row = cur.fetchone()
+            if row:
+                node_id = int(row[0])
+                cur.execute("UPDATE nodes SET data = ?, created_at = strftime('%s','now') WHERE id = ?", (j, node_id))
+                self._conn.commit()
+                return node_id
+            cur.execute("INSERT INTO nodes(label, type, data) VALUES (?, ?, ?)", (label, type, j))
+            self._conn.commit()
+            return cur.lastrowid
+
+    def clear_nodes(self, type: Optional[str] = None, label_prefix: Optional[str] = None) -> int:
+        sql = "DELETE FROM nodes"
+        where: List[str] = []
+        params: List[Any] = []
+        if type:
+            where.append("type = ?")
+            params.append(type)
+        if label_prefix:
+            where.append("label LIKE ?")
+            params.append(f"{label_prefix}%")
+        if where:
+            sql += " WHERE " + " AND ".join(where)
+        with self._lock:
+            cur = self._conn.cursor()
+            cur.execute(sql, params)
+            deleted = cur.rowcount if cur.rowcount is not None else 0
+            self._conn.commit()
+        return int(deleted)
+
+    def search_nodes(self, query: str, type: Optional[str] = None, limit: int = 25) -> List[Dict[str, Any]]:
+        query = (query or "").strip()
+        if not query:
+            return []
+        terms = [term for term in query.split() if len(term) > 1][:8]
+        if not terms:
+            terms = [query]
+        clauses = []
+        params: List[Any] = []
+        for term in terms:
+            like = f"%{term}%"
+            clauses.append("(label LIKE ? OR data LIKE ?)")
+            params.extend([like, like])
+        sql = "SELECT id, label, type, data, created_at FROM nodes"
+        where: List[str] = []
+        if clauses:
+            where.append("(" + " OR ".join(clauses) + ")")
+        if type:
+            where.append("type = ?")
+            params.append(type)
+        if where:
+            sql += " WHERE " + " AND ".join(where)
+        sql += " ORDER BY created_at DESC LIMIT ?"
+        params.append(limit)
+        with self._lock:
+            cur = self._conn.cursor()
+            cur.execute(sql, params)
+            rows = cur.fetchall()
+        out = []
+        for r in rows:
+            try:
+                data = json.loads(r[3]) if r[3] else {}
+            except Exception:
+                data = {"raw": r[3]}
+            out.append({"id": r[0], "label": r[1], "type": r[2], "data": data, "created_at": r[4]})
+        return out
+
     def add_edge(self, src: int, dst: int, relation: str = "related_to", data: Optional[Dict[str, Any]] = None) -> int:
         data = data or {}
         j = json.dumps(data, default=str)

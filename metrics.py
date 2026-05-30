@@ -1,6 +1,27 @@
-from prometheus_client import Counter, Histogram, Gauge
-from prometheus_client import CollectorRegistry, generate_latest
 import time
+
+try:
+    from prometheus_client import Counter, Histogram, Gauge
+    from prometheus_client import CollectorRegistry
+except Exception:
+    class _NoopMetric:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def inc(self, *args, **kwargs):
+            pass
+
+        def observe(self, *args, **kwargs):
+            pass
+
+        def set(self, *args, **kwargs):
+            pass
+
+    Counter = Histogram = Gauge = _NoopMetric
+
+    class CollectorRegistry:
+        def __init__(self, *args, **kwargs):
+            pass
 
 # Registry (use default registry by importing in server for exposition)
 registry = CollectorRegistry(auto_describe=True)
@@ -35,5 +56,8 @@ def observe_memory_recall(func):
 
 def metrics_output():
     # Use the default registry to include registered metrics
-    from prometheus_client import generate_latest, REGISTRY
-    return generate_latest(REGISTRY)
+    try:
+        from prometheus_client import generate_latest, REGISTRY
+        return generate_latest(REGISTRY)
+    except Exception:
+        return b""

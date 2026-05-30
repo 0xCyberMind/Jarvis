@@ -16,3 +16,19 @@ def test_memory_api_exists():
         pass
     rows = memory.recall(tag, limit=5)
     assert isinstance(rows, list)
+
+
+def test_build_memory_context_deduplicates(monkeypatch):
+    monkeypatch.setattr(memory, "get_open_tasks", lambda: [])
+    monkeypatch.setattr(memory, "recall", lambda query, limit=3: [
+        {"type": "fact", "content": "keep this"},
+        {"type": "fact", "content": "keep this"},
+    ])
+    monkeypatch.setattr(memory, "get_important_memories", lambda limit=3: [
+        {"content": "keep this"},
+        {"content": "another fact"},
+    ])
+
+    context = memory.build_memory_context("remember this")
+    assert context.count("keep this") == 1
+    assert "another fact" in context

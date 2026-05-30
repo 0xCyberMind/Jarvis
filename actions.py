@@ -273,16 +273,28 @@ async def _open_windows_terminal(command: str = "", cwd: str | None = None) -> b
 
 
 def _find_windows_browser(browser: str) -> str | None:
-    names = ["firefox"] if browser.lower() == "firefox" else ["chrome", "msedge"]
+    browser_name = browser.lower()
+    if browser_name == "firefox":
+        names = ["firefox"]
+    elif browser_name in {"edge", "msedge"}:
+        names = ["msedge", "chrome"]
+    else:
+        names = ["chrome", "msedge"]
     for name in names:
         path = shutil.which(name)
         if path:
             return path
 
-    if browser.lower() == "firefox":
+    if browser_name == "firefox":
         candidates = [
             Path(os.environ.get("ProgramFiles", "")) / "Mozilla Firefox" / "firefox.exe",
             Path(os.environ.get("ProgramFiles(x86)", "")) / "Mozilla Firefox" / "firefox.exe",
+        ]
+    elif browser_name in {"edge", "msedge"}:
+        candidates = [
+            Path(os.environ.get("ProgramFiles", "")) / "Microsoft" / "Edge" / "Application" / "msedge.exe",
+            Path(os.environ.get("ProgramFiles(x86)", "")) / "Microsoft" / "Edge" / "Application" / "msedge.exe",
+            Path(os.environ.get("ProgramFiles", "")) / "Google" / "Chrome" / "Application" / "chrome.exe",
         ]
     else:
         candidates = [
@@ -311,7 +323,8 @@ async def open_terminal(command: str = "") -> dict:
 
 
 async def open_browser(url: str, browser: str = "chrome") -> dict:
-    app_name = "Firefox" if browser.lower() == "firefox" else "Chrome"
+    browser_name = browser.lower()
+    app_name = "Firefox" if browser_name == "firefox" else ("Edge" if browser_name in {"edge", "msedge"} else "Chrome")
     if url.startswith("file://"):
         raw_path = url.removeprefix("file://")
         try:
@@ -729,7 +742,8 @@ async def open_app(app_name: str) -> dict:
                 "confirmation": "Opening WhatsApp from Windows search, sir." if success else "I couldn't open WhatsApp from Windows search, sir.",
             }
         if command in {"chrome", "msedge", "firefox"}:
-            return await open_browser("about:blank", "firefox" if command == "firefox" else "chrome")
+            browser = "firefox" if command == "firefox" else ("edge" if command == "msedge" else "chrome")
+            return await open_browser("about:blank", browser)
         success = await _launch_windows_app(command)
         return {
             "success": success,
@@ -738,6 +752,90 @@ async def open_app(app_name: str) -> dict:
     except Exception as e:
         log.error(f"open_app failed: {e}")
         return {"success": False, "confirmation": _pick("fail_open", app=app_name)}
+
+
+def _process_candidates_for_app(app_name: str) -> list[str]:
+    name = app_name.lower().strip().replace(".exe", "")
+    command = APP_COMMANDS.get(name, name).lower().replace(".exe", "")
+    candidates = {name, command}
+    extras = {
+        "chrome": {"chrome"},
+        "google chrome": {"chrome"},
+        "edge": {"msedge"},
+        "microsoft edge": {"msedge"},
+        "msedge": {"msedge"},
+        "firefox": {"firefox"},
+        "whatsapp": {"whatsapp"},
+        "whats app": {"whatsapp"},
+        "notepad": {"notepad"},
+        "calculator": {"calculatorapp", "calc"},
+        "calc": {"calculatorapp", "calc"},
+        "explorer": {"explorer"},
+        "file explorer": {"explorer"},
+        "vs code": {"code"},
+        "vscode": {"code"},
+        "visual studio code": {"code"},
+    }
+    candidates.update(extras.get(name, set()))
+    candidates.update(extras.get(command, set()))
+    return sorted(c for c in candidates if c)
+
+
+def _title_needles_for_app(app_name: str) -> list[str]:
+    name = app_name.lower().strip()
+    needles = {name, name.replace(" ", "")}
+    if name in {"chrome", "google chrome"}:
+        needles.update({"chrome", "google chrome"})
+    elif name in {"edge", "microsoft edge", "msedge"}:
+        needles.update({"edge", "microsoft edge"})
+    elif name in {"whatsapp", "whats app"}:
+        needles.update({"whatsapp", "whats app"})
+    elif name in {"explorer", "file explorer"}:
+        needles.update({"file explorer", "explorer"})
+    elif name in {"calculator", "calc"}:
+        needles.update({"calculator", "calc"})
+    return sorted(n for n in needles if n)
+
+
+async def switch_to_app(app_name: str) -> dict:
+    """Focus an already-open Windows app by process name or window title."""
+    label = app_name.strip() or "that app"
+    process_names = _process_candidates_for_app(label)
+    title_needles = _title_needles_for_app(label)
+    ps_names = ", ".join("'" + n.replace("'", "''") + "'" for n in process_names)
+    ps_needles = ", ".join("'" + n.replace("'", "''") + "'" for n in title_needles)
+    script = f"""
+$names = @({ps_names})
+$needles = @({ps_needles})
+$shell = New-Object -ComObject WScript.Shell
+$matches = Get-Process | Where-Object {{ $_.MainWindowTitle }} | Where-Object {{
+    $pn = $_.ProcessName.ToLower()
+    $title = $_.MainWindowTitle.ToLower()
+    ($names -contains $pn) -or (($needles | Where-Object {{ $title.Contains($_) }}).Count -gt 0)
+}}
+$p = $matches | Select-Object -First 1
+if ($p) {{
+    $null = $shell.AppActivate($p.Id)
+    Start-Sleep -Milliseconds 120
+    exit 0
+}}
+exit 1
+"""
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            "powershell", "-NoProfile", "-Command", script,
+            stdout=asyncio.subprocess.DEVNULL,
+            stderr=asyncio.subprocess.DEVNULL,
+        )
+        await asyncio.wait_for(proc.communicate(), timeout=6)
+        success = proc.returncode == 0
+        return {
+            "success": success,
+            "confirmation": f"Switched to {label}, sir." if success else f"I couldn't find an open {label} window, sir.",
+        }
+    except Exception as e:
+        log.error(f"switch_to_app failed: {e}")
+        return {"success": False, "confirmation": f"I couldn't switch to {label}, sir."}
 
 
 async def list_running_apps(limit: int = 20) -> dict:

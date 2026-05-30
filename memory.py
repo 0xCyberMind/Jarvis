@@ -13,6 +13,7 @@ so JARVIS gets smarter over time.
 
 import json
 import logging
+import re
 import sqlite3
 import time
 from datetime import datetime, timedelta
@@ -136,9 +137,14 @@ def recall(query: str, limit: int = 5) -> list[dict]:
     if not fts_query:
         return []
     import time as _time
-    from metrics import memory_recall_count, memory_recall_latency
+    try:
+        from metrics import memory_recall_count, memory_recall_latency
+    except Exception:
+        memory_recall_count = None
+        memory_recall_latency = None
 
-    memory_recall_count.inc()
+    if memory_recall_count is not None:
+        memory_recall_count.inc()
     start = _time.time()
     conn = _get_db()
     try:
@@ -153,10 +159,11 @@ def recall(query: str, limit: int = 5) -> list[dict]:
     except Exception:
         results = []
     finally:
-        try:
-            memory_recall_latency.observe(_time.time() - start)
-        except Exception:
-            pass
+        if memory_recall_latency is not None:
+            try:
+                memory_recall_latency.observe(_time.time() - start)
+            except Exception:
+                pass
     # Update access counts
     for r in results:
         conn.execute(
@@ -337,6 +344,10 @@ def get_notes_by_topic(topic: str) -> list[dict]:
     return [dict(r) for r in results]
 
 
+def _memory_signature(text: str) -> str:
+    return re.sub(r"\s+", " ", text.strip().lower())
+
+
 # ---------------------------------------------------------------------------
 # Context Builder — smart context for LLM calls
 # ---------------------------------------------------------------------------
@@ -348,6 +359,18 @@ def build_memory_context(user_message: str) -> str:
     Fast — runs FTS queries, no heavy computation.
     """
     parts = []
+    seen_entries: set[str] = set()
+
+    def _add_lines(header: str, lines: list[str]) -> None:
+        unique_lines: list[str] = []
+        for line in lines:
+            signature = _memory_signature(line)
+            if signature in seen_entries:
+                continue
+            seen_entries.add(signature)
+            unique_lines.append(line)
+        if unique_lines:
+            parts.append(header + "\n" + "\n".join(unique_lines))
 
     # Always include: open high-priority tasks
     high_tasks = [t for t in get_open_tasks() if t["priority"] == "high"]
@@ -363,7 +386,7 @@ def build_memory_context(user_message: str) -> str:
         relevant = recall(user_message, limit=3)
         if relevant:
             mem_lines = [f"  - [{m['type']}] {m['content']}" for m in relevant]
-            parts.append("RELEVANT MEMORIES:\n" + "\n".join(mem_lines))
+            _add_lines("RELEVANT MEMORIES:", mem_lines)
 
     # Recent important memories (always available)
     important = get_important_memories(limit=3)
@@ -371,7 +394,7 @@ def build_memory_context(user_message: str) -> str:
         imp_lines = [f"  - {m['content']}" for m in important
                      if not any(m["content"] == r["content"] for r in (relevant if 'relevant' in dir() else []))]
         if imp_lines:
-            parts.append("KEY FACTS:\n" + "\n".join(imp_lines[:3]))
+            _add_lines("KEY FACTS:", imp_lines[:3])
 
     return "\n\n".join(parts) if parts else ""
 
