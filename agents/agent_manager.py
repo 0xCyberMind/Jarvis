@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import logging
 import time
 from typing import Dict, List, Optional, Any
@@ -80,7 +81,7 @@ class AgentManager:
         if not ag:
             return {"status": "error", "reason": "agent missing"}
         try:
-            if asyncio.iscoroutinefunction(ag.execute_task):
+            if inspect.iscoroutinefunction(ag.execute_task):
                 return await ag.execute_task(t)
             else:
                 return await asyncio.get_event_loop().run_in_executor(None, ag.execute_task, t)

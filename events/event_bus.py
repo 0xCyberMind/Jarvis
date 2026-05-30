@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import time
 import logging
 from typing import Callable, Dict, List, Optional
@@ -48,7 +49,7 @@ class EventBus:
         start = time.time()
         for h in handlers:
             try:
-                if asyncio.iscoroutinefunction(h):
+                if inspect.iscoroutinefunction(h):
                     tasks.append(asyncio.create_task(h(event)))
                 else:
                     # run sync handlers in threadpool
