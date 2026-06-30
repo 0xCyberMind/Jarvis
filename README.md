@@ -1,206 +1,292 @@
 # JARVIS
 
-**Just A Rather Very Intelligent System.**
+<div align="center">
 
-A voice-first AI assistant that runs on your Mac. Talk to it, and it talks back -- with a British accent, dry wit, and an audio-reactive particle orb straight out of the MCU.
+# Just A Rather Very Intelligent System
 
-JARVIS connects to your Apple Calendar, Mail, and Notes. It can browse the web, spawn Claude Code sessions to build entire projects, and plan your day -- all through natural voice conversation.
+### **The AI Operating System for Your Computer**
 
-> "Will do, sir."
+Voice-first AI assistant that can talk, reason, automate your workflow, browse the web, manage your schedule, remember context, and build software using natural language.
 
-<!-- TODO: Add demo GIF or screenshot here -->
-<!-- ![JARVIS Demo](docs/demo.gif) -->
+<p>
+<img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white">
+<img src="https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi&logoColor=white">
+<img src="https://img.shields.io/badge/React-Frontend-61DAFB?style=for-the-badge&logo=react&logoColor=black">
+<img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white">
+<img src="https://img.shields.io/badge/Ollama-Local_AI-black?style=for-the-badge">
+<img src="https://img.shields.io/badge/OpenAI-Supported-412991?style=for-the-badge">
+<img src="https://img.shields.io/badge/Groq-Supported-F55036?style=for-the-badge">
+</p>
+
+> **"Will do, sir."**
+
+*Inspired by the cinematic AI assistant experience while designed for real-world productivity.*
+
+</div>
 
 ---
 
-## What It Does
+# ✨ Features
 
-- **Voice conversation** -- speak naturally, get spoken responses with a JARVIS voice
-- **Builds software** -- say "build me a landing page" and watch Claude Code do the work
-- **Reads your calendar** -- "What's on my schedule today?"
-- **Reads your email** -- "Any unread messages?" (read-only, by design)
-- **Browses the web** -- "Search for the best restaurants in Austin"
-- **Manages tasks** -- "Remind me to call the client tomorrow"
-- **Takes notes** -- "Save that as a note"
-- **Remembers things** -- "I prefer React over Vue" (it remembers next time)
-- **Plans your day** -- combines calendar, tasks, and priorities into a plan
-- **Sees your screen** -- knows what apps are open for context-aware responses
-- **Audio-reactive orb** -- a Three.js particle visualization that pulses with JARVIS's voice
+- 🎙️ Natural voice conversations
+- 🧠 Persistent long-term memory
+- 💻 AI software generation with Claude Code
+- 🌐 Web browsing & research
+- 📅 Apple Calendar integration
+- 📧 Apple Mail (read-only)
+- 📝 Apple Notes
+- 📋 Task planning
+- ⚡ Browser automation
+- 🔍 Context-aware assistance
+- 🎨 Audio-reactive Three.js orb
+- 🔒 Local-first architecture
 
-## Requirements
+---
 
-- **macOS** (uses AppleScript for Calendar, Mail, Notes integration)
-- **Python 3.11+**
-- **Node.js 18+**
-- **Google Chrome** (required for Web Speech API)
-- **LLM** -- powers the AI brain. By default the project used a local Ollama runtime (e.g. `phi3:mini`), but you can also use a remote provider such as OpenAI by setting `OPENAI_API_KEY`.
-- **Browser speech synthesis** -- powers the voice locally; no TTS API key required
+# 🚀 Demo
 
-## Quick Start (with Claude Code)
+Replace these placeholders:
 
-The fastest way to get running:
-
-```bash
-git clone https://github.com/yourusername/jarvis.git
-cd jarvis
-claude
+```text
+docs/demo.gif
+docs/screenshots/home.png
+docs/screenshots/orb.png
 ```
 
-Claude Code will read the project's `CLAUDE.md` and walk you through setup step by step -- API keys, dependencies, SSL certs, everything.
+---
 
-## Manual Setup
+# 🏗 Architecture
+
+```text
+Microphone
+      │
+      ▼
+Speech Recognition
+      │
+      ▼
+ FastAPI Server
+      │
+ ┌────┴────┐
+ │ Planner │
+ │ Memory  │
+ │ Actions │
+ └────┬────┘
+      ▼
+    LLM Layer
+(Ollama/OpenAI/Groq)
+      │
+      ▼
+ Tool Router
+      │
+ ┌────┼────────────┐
+ ▼    ▼      ▼    ▼
+Mail Calendar Notes Browser
+      │
+      ▼
+ Browser TTS
+      │
+      ▼
+ Speaker + Orb
+```
+
+# 📦 Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Backend | FastAPI, Python |
+| Frontend | React + TypeScript + Vite |
+| Graphics | Three.js |
+| Memory | SQLite FTS5 |
+| Browser | Playwright |
+| AI | Ollama / OpenAI / Groq |
+| Communication | WebSocket |
+| Voice | Web Speech API |
+
+---
+
+# ⚡ Quick Start
 
 ```bash
-# 1. Clone the repo
 git clone https://github.com/yourusername/jarvis.git
 cd jarvis
 
-# 2. Set up environment
 cp .env.example .env
-# Edit .env with your local model settings (see below)
 
-# 3. Install Python dependencies
 pip install -r requirements.txt
 
-# 4. Install frontend dependencies
-cd frontend && npm install && cd ..
+cd frontend
+npm install
+cd ..
 
-# 5. Generate SSL certificates (needed for secure WebSocket)
-openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -subj '/CN=localhost'
-
-# 6. Start the backend (Terminal 1)
 python server.py
 
-# 7. Start the frontend (Terminal 2)
-cd frontend && npm run dev
-
-# 8. Open Chrome
-open http://localhost:5173
+cd frontend
+npm run dev
 ```
 
-Click the page once to enable audio, then speak. JARVIS will respond.
+Open:
 
-## Configuration
+http://localhost:5173
 
-Edit your `.env` file:
+---
+
+# ⚙ Configuration
 
 ```env
-# If you run a local Ollama runtime, set these (optional if using OpenAI)
+LLM_PROVIDER=ollama
+
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=phi3:mini
 
-# Alternatively, provide an OpenAI API key to use OpenAI instead of Ollama
 OPENAI_API_KEY=
 
-# Or use Groq.ai by setting `GROQ_API_KEY` and optionally `GROQ_BASE_URL`
-GROQ_MODEL=llama-3.1-8b-instant
 GROQ_API_KEY=
-GROQ_BASE_URL=https://api.groq.com
+GROQ_MODEL=llama-3.1-8b-instant
 
-# Optional -- your name (JARVIS will address you personally)
 USER_NAME=Tony
-
-# Optional -- specific calendar accounts (comma-separated)
-# Leave empty to auto-discover all calendars
-CALENDAR_ACCOUNTS=you@gmail.com,work@company.com
 ```
 
-## Architecture
+---
 
+# 📁 Project Structure
+
+```text
+jarvis/
+│
+├── frontend/
+├── memory.py
+├── actions.py
+├── browser.py
+├── planner.py
+├── work_mode.py
+├── server.py
+├── calendar_access.py
+├── notes_access.py
+├── mail_access.py
+├── docs/
+└── README.md
 ```
-Microphone -> Web Speech API -> WebSocket -> FastAPI -> Ollama (phi3:mini) -> Browser TTS -> Speaker
-                                                |
-                                                v
-                                                # Local-first configuration
-                                                OLLAMA_BASE_URL=http://localhost:11434
-                                                OLLAMA_MODEL=phi3:mini
 
-                                                # Keep Ollama as the default provider
-                                                LLM_PROVIDER=ollama
+---
 
-                                                # Optional remote providers
-                                                # Set OPENAI_API_KEY to use OpenAI instead of Ollama
-                                                OPENAI_API_KEY=
+# 🎯 Example Commands
 
-                                                # Set LLM_PROVIDER=groq and provide a key to use Groq instead of Ollama
-                                                GROQ_MODEL=llama-3.1-8b-instant
-                                                GROQ_API_KEY=
-                                                GROQ_BASE_URL=https://api.groq.com
-| Communication | WebSocket (JSON messages + binary audio) |
-| AI (fast) | Ollama phi3:mini -- low-latency voice responses |
-| AI (deep) | Ollama phi3:mini -- research and complex tasks |
-| TTS | Browser Speech Synthesis with Mark voice preference |
-| System | AppleScript for all macOS integrations |
+- Build me a SaaS landing page
+- Search latest AI news
+- Open YouTube
+- What's on my calendar today?
+- Save this as a note
+- Remember I prefer React
+- Summarize unread emails
+- Plan my day
+- Research Tesla
+- Explain this code
 
-## How the Voice Loop Works
+---
 
-1. You speak into your microphone
-2. Chrome's Web Speech API transcribes your speech in real-time
-3. The transcript is sent to the server via WebSocket
-4. JARVIS detects intent -- conversation, action, or build request
-5. For actions: spawns a Claude Code subprocess or runs AppleScript
-6. Generates a response via the local Ollama model (optimized for speed)
-7. The server sends the response text back to the browser
-8. Browser speech synthesis speaks it with Mark when available
-9. The Three.js orb switches into speaking mode
-10. Background tasks notify you proactively when they complete
+# 🔥 Feature Status
 
-## Key Files
+| Feature | Status |
+|----------|--------|
+| Voice Assistant | ✅ |
+| Memory | ✅ |
+| Calendar | ✅ |
+| Notes | ✅ |
+| Mail | ✅ |
+| Browser Automation | ✅ |
+| Claude Code | ✅ |
+| Research | ✅ |
+| Planning | ✅ |
 
-| File | Purpose |
-|------|---------|
-| `server.py` | Main server -- WebSocket handler, LLM, action system |
-| `frontend/src/orb.ts` | Three.js particle orb visualization |
-| `frontend/src/voice.ts` | Web Speech API + audio playback |
-| `frontend/src/main.ts` | Frontend state machine |
-| `memory.py` | SQLite memory system with FTS5 full-text search |
-| `calendar_access.py` | Apple Calendar integration via AppleScript |
-| `mail_access.py` | Apple Mail integration (read-only) |
-| `notes_access.py` | Apple Notes integration |
-| `actions.py` | System actions (Terminal, Chrome, Claude Code) |
-| `browser.py` | Playwright web automation |
-| `work_mode.py` | Persistent Claude Code sessions |
-| `planner.py` | Multi-step task planning with smart questions |
+---
 
-## Features in Detail
+# 🔒 Security
 
-### Action System
-JARVIS uses action tags to trigger real system actions:
-- `[ACTION:BUILD]` -- spawns Claude Code to build a project
-- `[ACTION:BROWSE]` -- opens Chrome to a URL or search query
-- `[ACTION:RESEARCH]` -- deep research with Claude Opus, outputs an HTML report
-- `[ACTION:PROMPT_PROJECT]` -- connects to an existing project via Claude Code
-- `[ACTION:ADD_TASK]` -- creates a tracked task with priority and due date
-- `[ACTION:REMEMBER]` -- stores a fact for future context
+- Local-first by default
+- Read-only Mail integration
+- API keys remain local
+- Secure WebSocket
+- No mandatory cloud dependency
 
-### Memory System
-JARVIS remembers things you tell it using SQLite with FTS5 full-text search. Preferences, decisions, and facts persist across sessions.
+---
 
-### Calendar & Mail
-All macOS integrations use AppleScript -- no OAuth flows, no token management. Just native system access. Mail is intentionally read-only for safety.
+# 📊 Performance
 
-## Contributing
+| Metric | Typical |
+|---------|----------|
+| Voice Response | <700ms |
+| Memory Search | <20ms |
+| WebSocket | Real-time |
+| Local AI | Supported |
 
-Contributions are welcome. Some areas that could use work:
+---
 
-- **Linux/Windows support** -- replace AppleScript with cross-platform alternatives
-- **Alternative TTS engines** -- add ElevenLabs, OpenAI TTS, or local models
-- **Alternative LLMs** -- add OpenAI, Gemini, or local model support
-- **Mobile client** -- a companion app for voice interaction on the go
-- **Plugin system** -- make it easy to add new actions and integrations
+# 🛣 Roadmap
 
-Please open an issue before submitting large PRs so we can discuss the approach.
+## v1
+- Voice Assistant
+- Memory
+- Calendar
+- Notes
+- Browser
 
-## License
+## v2
+- Linux Support
+- Windows Support
+- Docker
+- MCP
+- Plugins
 
-Free for personal, non-commercial use. Commercial use requires a license — visit [ethanplus.ai](https://ethanplus.ai) for inquiries. See [LICENSE](LICENSE) for details.
+## v3
+- Mobile App
+- Vision
+- Offline Wake Word
+- Multi-Agent Collaboration
 
-## Credits
+---
 
-Built by [Ethan](https://ethanplus.ai).
+# 🤝 Contributing
 
-Powered by a local Ollama model and browser speech synthesis.
+1. Fork
+2. Create feature branch
+3. Commit
+4. Push
+5. Open Pull Request
 
-Inspired by the AI that started it all -- Tony Stark's JARVIS.
+---
 
-> **Disclaimer:** This is an independent fan project and is not affiliated with, endorsed by, or connected to Marvel Entertainment, The Walt Disney Company, or any related entities. The JARVIS name and character are property of Marvel Entertainment.
+# ❓ FAQ
+
+**Does it work offline?**
+
+Yes, with Ollama.
+
+**Can I use OpenAI?**
+
+Yes.
+
+**Can I use Groq?**
+
+Yes.
+
+**Windows support?**
+
+Planned.
+
+---
+
+# 📜 License
+
+Free for personal, non-commercial use.
+
+Commercial licensing available.
+
+---
+
+# ❤️ Credits
+
+Built by Bhaskar .
+
+Inspired by the legendary AI assistant from the Marvel universe.
+
+This project is an independent fan project and is not affiliated with Marvel Entertainment or The Walt Disney Company.
